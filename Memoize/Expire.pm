@@ -43,7 +43,7 @@ sub TIEHASH {
   }
   $args{LIFETIME} ||= 0;
   $args{NUM_USES} ||= 0;
-  $args{C} = \%cache;
+  $args{C} = delete $args{HASH} || \%cache;
   bless \%args => $package;
 }
 
