@@ -1,4 +1,5 @@
 # -*- mode: perl; perl-indent-level: 2 -*-
+# vim: ts=8 sw=2 sts=2 noexpandtab
 
 use Memoize 0.45 qw(memoize unmemoize);
 # $Memoize::Storable::Verbose = 0;
