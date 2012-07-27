@@ -30,17 +30,22 @@ if ($@) {
   exit 0;
 }
 
-print "1..4\n";
+print "1..9\n";
 
 $file = "storable$$";
 1 while unlink $file;
 tryout('Memoize::Storable', $file, 1);  # Test 1..4
 1 while unlink $file;
+tryout('Memoize::Storable', $file, 5, 'nstore');  # Test 5..8
+print eval { Storable->VERSION('2.16') }
+  ? (Storable::file_magic($file)->{'netorder'} ? "ok 9\n" : "not ok 9\n")
+  : "ok 9 # skip Storable $Storable::VERSION too old for file_magic\n";
+1 while unlink $file;
 
 sub tryout {
-  my ($tiepack, $file, $testno) = @_;
+  my ($tiepack, $file, $testno, $option) = @_;
 
-  tie my %cache => $tiepack, $file
+  tie my %cache => $tiepack, $file, $option || ()
     or die $!;
 
   memoize 'c5', 
