@@ -147,7 +147,7 @@ sub memoize {
   }
   
   # We should put some more stuff in here eventually.
-  # We've been saying that for serveral versions now.
+  # We've been saying that for several versions now.
   # And you know what?  More stuff keeps going in!
   $memotable{$cref} = 
   {
@@ -718,7 +718,7 @@ should abort the program.  The error message is one of
 =item C<MERGE>
 
 C<MERGE> normally means that the memoized function does not
-distinguish between list and sclar context, and that return values in
+distinguish between list and scalar context, and that return values in
 both contexts should be stored together.  Both C<LIST_CACHE =E<gt>
 MERGE> and C<SCALAR_CACHE =E<gt> MERGE> mean the same thing.
 
@@ -740,7 +740,7 @@ if C<complicated> is memoized:
     $z = complicated(142);
 
 The first call will cache the result, say 37, in the scalar cache; the
-second will cach the list C<(37)> in the list cache.  The third call
+second will cache the list C<(37)> in the list cache.  The third call
 doesn't call the real C<complicated> function; it gets the value 37
 from the scalar cache.
 
@@ -877,7 +877,7 @@ Do not memoize a function with side effects.
 	}
 
 This function accepts two arguments, adds them, and prints their sum.
-Its return value is the numuber of characters it printed, but you
+Its return value is the number of characters it printed, but you
 probably didn't care about that.  But C<Memoize> doesn't understand
 that.  If you memoize this function, you will get the result you
 expect the first time you ask it to print the sum of 2 and 3, but
