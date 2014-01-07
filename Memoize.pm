@@ -785,7 +785,8 @@ stored in the same disk file; this saves you from having to deal with
 two disk files instead of one.  You can use a normalizer function to
 keep the two sets of return values separate.  For example:
 
-        tie my %cache => 'MLDBM', 'DB_File', $filename, ...;
+        local $MLDBM::UseDB = 'DB_File';
+        tie my %cache => 'MLDBM', $filename, ...;
 
 	memoize 'myfunc',
 	  NORMALIZER => 'n',
