@@ -133,9 +133,12 @@ sub memoize {
   # Perhaps I should check here that you didn't supply *both* merge
   # options.  But if you did, it does do something reasonable: They
   # both get merged to the same in-memory hash.
-  if ($options{SCALAR_CACHE} eq 'MERGE' || $options{LIST_CACHE} eq 'MERGE') {
+  if ($options{SCALAR_CACHE} eq 'MERGE') {
     $options{MERGED} = 1;
     $caches{SCALAR} = $caches{LIST};
+  } elsif ($options{LIST_CACHE} eq 'MERGE') {
+    $options{MERGED} = 1;
+    $caches{LIST} = $caches{SCALAR};
   }
 
   # Now deal with the TIE options
