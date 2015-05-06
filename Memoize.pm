@@ -749,7 +749,7 @@ storing its return value is a waste of space.  Specifying C<LIST_CACHE
 =E<gt> MERGE> will make C<memoize> use the same cache for scalar and
 list context return values, so that the second call uses the scalar
 cache that was populated by the first call.  C<complicated> ends up
-being called only once, and both subsequent calls return C<3> from the
+being called only once, and both subsequent calls return C<37> from the
 cache, regardless of the calling context.
 
 =back
