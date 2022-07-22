@@ -43,6 +43,12 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
 	      NAME => 'Memoize',
+	      AUTHOR => 'Mark Jason Dominus',
+	      ( eval { ExtUtils::MakeMaker->VERSION('6.06_03') } ? ( ABSTRACT_FROM => 'Memoize.pm' ) : () ),
+	      ( eval { ExtUtils::MakeMaker->VERSION('6.45_01') } ? ( META_ADD => {
+		'meta-spec' => { version => 2 },
+		prereqs => {},
+	      } ) : () ),
 	      VERSION_FROM => 'Memoize.pm',
 #	      'linkext' => {LINKTYPE => ''},
 	      'dist' => {COMPRESS => 'gzip', SUFFIX => 'gz'},
