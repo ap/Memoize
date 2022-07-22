@@ -47,6 +47,10 @@ WriteMakefile(
 	      ( eval { ExtUtils::MakeMaker->VERSION('6.06_03') } ? ( ABSTRACT_FROM => 'Memoize.pm' ) : () ),
 	      ( eval { ExtUtils::MakeMaker->VERSION('6.45_01') } ? ( META_ADD => {
 		'meta-spec' => { version => 2 },
+		resources => {
+		  repository => { type => 'git', map +( url => "$_.git", web => $_ ), 'https://github.com/ap/Memoize' },
+		  bugtracker => { web => 'https://rt.cpan.org/Dist/Display.html?Name=Memoize' }
+		},
 		prereqs => {},
 	      } ) : () ),
 	      VERSION_FROM => 'Memoize.pm',
