@@ -46,6 +46,7 @@ WriteMakefile(
 	      VERSION_FROM => 'Memoize.pm',
 #	      'linkext' => {LINKTYPE => ''},
 	      'dist' => {COMPRESS => 'gzip', SUFFIX => 'gz'},
+	      ( "$]" < 5.011 ? ( INSTALLDIRS => 'perl' ) : () ),
 );
 
 
