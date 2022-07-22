@@ -349,7 +349,7 @@ C<Time::HiRes> installed.
 
 =head1 AUTHOR
 
-Mark-Jason Dominus (mjd-perl-memoize+@plover.com)
+Mark-Jason Dominus
 
 Mike Cariaso provided valuable insight into the best way to solve this
 problem.
@@ -359,12 +359,5 @@ problem.
 perl(1)
 
 The Memoize man page.
-
-http://www.plover.com/~mjd/perl/Memoize/  (for news and updates)
-
-I maintain a mailing list on which I occasionally announce new
-versions of Memoize.  The list is for announcements only, not
-discussion.  To join, send an empty message to
-mjd-perl-memoize-request@Plover.com.
 
 =cut

@@ -5,8 +5,7 @@
 #
 # Copyright 1998, 1999, 2000, 2001, 2012 M. J. Dominus.
 # You may copy and distribute this program under the
-# same terms as Perl itself.  If in doubt, 
-# write to mjd-perl-memoize+@plover.com for a license.
+# same terms as Perl itself.
 
 package Memoize;
 $VERSION = '1.03_01';
@@ -1010,17 +1009,11 @@ C<f()> (C<f> called with no arguments) will not be memoized.  If this
 is a big problem, you can supply a normalizer function that prepends
 C<"x"> to every key.
 
-=head1 MAILING LIST
-
-To join a very low-traffic mailing list for announcements about
-C<Memoize>, send an empty note to C<mjd-perl-memoize-request@plover.com>.
-
 =head1 AUTHOR
 
-Mark-Jason Dominus (C<mjd-perl-memoize+@plover.com>), Plover Systems co.
+Mark-Jason Dominus
 
-See the C<Memoize.pm> Page at http://perl.plover.com/Memoize/
-for news and upgrades.  Near this page, at
+At
 http://perl.plover.com/MiniMemoize/ there is an article about
 memoization and about the internals of Memoize that appeared in The
 Perl Journal, issue #13.  (This article is also included in the
@@ -1030,11 +1023,6 @@ The author's book I<Higher-Order Perl> (2005, ISBN 1558607013, published
 by Morgan Kaufmann) discusses memoization (and many other 
 topics) in tremendous detail. It is available on-line for free.
 For more information, visit http://hop.perl.plover.com/ .
-
-To join a mailing list for announcements about C<Memoize>, send an
-empty message to C<mjd-perl-memoize-request@plover.com>.  This mailing
-list is for announcements only and has extremely low traffic---fewer than
-two messages per year.
 
 =head1 COPYRIGHT AND LICENSE
 
