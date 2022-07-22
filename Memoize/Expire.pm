@@ -2,7 +2,7 @@
 package Memoize::Expire;
 # require 5.00556;
 use Carp;
-$DEBUG = 0;
+use vars qw($DEBUG);
 $VERSION = '1.03';
 
 # This package will implement expiration by prepending a fixed-length header
