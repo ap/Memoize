@@ -125,7 +125,7 @@ sub memoize {
       $caches{$context} = {};
       # (this might get tied later, or MERGEd away)
     } else {
-      croak "Unrecognized option to `${context}_CACHE': `$cache_opt' should be one of (@CONTEXT_TAGS); aborting";
+      croak "Unrecognized option to `${context}_CACHE': `$cache_opt' should be one of (@CONTEXT_TAGS)";
     }
   }
 
@@ -187,7 +187,7 @@ sub _my_tie {
   require $modulefile;
   my $rc = (tie %$hash => $module, @args);
   unless ($rc) {
-    croak "Memoize: Couldn't tie hash to `$module': $!; aborting";
+    croak "Couldn't tie memoize hash to `$module': $!";
   }
   1;
 }
