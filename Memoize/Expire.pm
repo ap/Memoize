@@ -3,7 +3,7 @@ package Memoize::Expire;
 # require 5.00556;
 use Carp;
 use vars qw($DEBUG);
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 # This package will implement expiration by prepending a fixed-length header
 # to the font of the cached data.  The format of the header will be:

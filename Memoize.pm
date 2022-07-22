@@ -8,7 +8,7 @@
 # same terms as Perl itself.
 
 package Memoize;
-$VERSION = '1.03_01';
+$VERSION = '1.04';
 
 # Compile-time constants
 sub SCALAR () { 0 } 
@@ -349,7 +349,6 @@ Memoize - Make functions faster by trading space for time
 
 =head1 SYNOPSIS
 
-        # This is the documentation for Memoize 1.03
 	use Memoize;
 	memoize('slow_function');
 	slow_function(arguments);    # Is faster than it was before

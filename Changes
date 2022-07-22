@@ -1,3 +1,16 @@
+1.04  Fri 22 Jul 2022
+  * No removal of . from @INC during TIE module load.
+    The module load is not optional, so the . removal was mistaken
+  * Properly overridable $Memoize::Expire::DEBUG (RT #133860, Slaven Rezic).
+    Previously it would get reset the module was loaded
+  * Correct INSTALLDIRS for installation on pre-5.12 perls (RT #63935)
+  * Documentation fixes (David Steinbrunner, Dominic Hargreaves, Slaven Rezic, Glenn Fowler)
+
+1.03_01  Tue Jul 26 2016
+  * Removal of . from @INC during TIE module load (Tony Cook)
+  * Timing-sensitive test fixes (RT #108382, David Mitchell)
+  * GDBM test fixes (RT #139736, Sergey Poznyakoff)
+
 1.03  Sun 22 Apr 2012
   * Clarified MERGE cache options and fixed bug
   * Documentation fixes

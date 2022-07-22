@@ -2,7 +2,7 @@ package Memoize::NDBM_File;
 
 use NDBM_File;
 @ISA = qw(NDBM_File);
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 $Verbose = 0;
 

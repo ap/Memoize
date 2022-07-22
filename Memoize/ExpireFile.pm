@@ -1,6 +1,6 @@
 package Memoize::ExpireFile;
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 use Carp;
 
 my $Zero = pack("N", 0);
