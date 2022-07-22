@@ -120,6 +120,10 @@ sub _get_header  {
 
 1;
 
+__END__
+
+=pod
+
 =head1 NAME 
 
 Memoize::Expire - Plug-in module for automatic expiration of memoized values

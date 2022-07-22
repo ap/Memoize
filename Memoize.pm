@@ -339,9 +339,9 @@ sub _crap_out {
 
 1;
 
+__END__
 
-
-
+=pod
 
 =head1 NAME
 

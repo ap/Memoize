@@ -1,15 +1,5 @@
 package Memoize::Storable;
 
-=head1 NAME
-
-Memoize::Storable - store Memoized data in Storable database
-
-=head1 DESCRIPTION
-
-See L<Memoize>.
-
-=cut
-
 use Storable ();
 $VERSION = '1.03';
 $Verbose = 0;
@@ -69,4 +59,19 @@ sub FIRSTKEY {
 sub NEXTKEY {
   undef;
 }
+
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Memoize::Storable - store Memoized data in Storable database
+
+=head1 DESCRIPTION
+
+See L<Memoize>.
+
+=cut
