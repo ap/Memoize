@@ -1,6 +1,6 @@
 package Memoize::ExpireTest;
 
-$VERSION = '1.04';
+$VERSION = '1.05';
 my %cache;
 
 sub TIEHASH {	

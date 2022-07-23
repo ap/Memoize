@@ -1,3 +1,10 @@
+1.05  Fri 24 Jul 2022
+  * Actual implementation of the HASH option of Memoize::Expire (RT #18171, Eric Brine)
+  * Vim modeline in Expire.pm (RT #38785, Moritz Lenz)
+  * Fix for minor memory leak in unmemoize() (RT #52819, Joshua I. Miller)
+  * Actual implementation of the 'nstore' option of Memoize::Storable (RT #77790, Jonathan Nieder)
+  * Fix for broken LIST_CACHE => MERGE option in memoize() (RT #91927, Slaven Rezic)
+
 1.04  Fri 22 Jul 2022
   * No removal of . from @INC during TIE module load.
     The module load is not optional, so the . removal was mistaken

@@ -10,7 +10,7 @@
 # same terms as Perl itself.
 
 package Memoize;
-$VERSION = '1.04';
+$VERSION = '1.05';
 
 # Compile-time constants
 sub SCALAR () { 0 } 
