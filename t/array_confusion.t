@@ -1,7 +1,4 @@
-#!/usr/bin/perl
-
-use lib '..';
-use Memoize 'memoize', 'unmemoize';
+use Memoize qw(memoize unmemoize);
 use Test::More;
 
 sub reff {

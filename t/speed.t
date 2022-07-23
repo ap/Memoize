@@ -1,6 +1,3 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize;
 
 if (-e '.fast') {

@@ -1,8 +1,4 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize;
-
 
 print "1..11\n";
 
@@ -65,4 +61,3 @@ sub f { 1 }
 memoize('f', NORMALIZER => 'n');
 $s = f('SCALAR', 10);		# Test 10
 @a = f('ARRAY' , 11);		# Test 11
-

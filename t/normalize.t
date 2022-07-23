@@ -1,10 +1,6 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize;
 
 print "1..7\n";
-
 
 sub n_null { '' }
 
@@ -36,7 +32,6 @@ print ((("@res" eq "1-1 2-2 3-3 2-4 1-5") ? '' : 'not '), "ok 2\n");
 print ((("@res" eq "1-1 1-1 1-1 1-1 1-1") ? '' : 'not '), "ok 3\n");
 
 		
-       
 # Test fully-qualified name and installation
 $COUNT = 0;
 sub parity { $COUNT++; $_[0] % 2 }
@@ -53,5 +48,3 @@ memoize('par2', NORMALIZER =>  \&parnorm);
 @res = map { &par2($_) } @ARGS;
 print ((("@res" eq "1 0 1 0 1") ? '' : 'not '), "ok 6\n");
 print (( ($COUNT == 2) ? '' : 'not '), "ok 7\n");
-
-

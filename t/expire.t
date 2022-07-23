@@ -1,6 +1,3 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize;
 use Memoize::ExpireTest;
 
@@ -69,4 +66,3 @@ for $i (1, 2, 3) {
 }
 
 exit 0;
-

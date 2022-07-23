@@ -1,8 +1,3 @@
-#!/usr/bin/perl
-
-# test caching timeout
-
-use lib '..';
 use Memoize;
 
 my $DEBUG = 0;

@@ -1,9 +1,5 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize;
 $EXPECTED_WARNING = '(no warning expected)';
-
 
 print "1..4\n";
 

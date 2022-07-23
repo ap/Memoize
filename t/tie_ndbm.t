@@ -1,6 +1,3 @@
-#!/usr/bin/perl
-
-use lib qw(. ..);
 use Memoize 0.45 qw(memoize unmemoize);
 use Fcntl;
 # use Memoize::NDBM_File;
@@ -36,7 +33,6 @@ tryout('Memoize::NDBM_File', $file, 1);  # Test 1..4
 sub tryout {
   my ($tiepack, $file, $testno) = @_;
 
-
   tie my %cache => $tiepack, $file, O_RDWR | O_CREAT, 0666
     or die $!;
 
@@ -51,14 +47,14 @@ sub tryout {
   $testno++;
   print (($t2 == 5) ? "ok $testno\n" : "not ok $testno\n");
   unmemoize 'c5';
-  
+
   # Now something tricky---we'll memoize c23 with the wrong table that
   # has the 5 already cached.
   memoize 'c23', 
   SCALAR_CACHE => [HASH => \%cache],
   LIST_CACHE => 'FAULT'
     ;
-  
+
   my $t3 = c23();
   my $t4 = c23();
   $testno++;
@@ -67,4 +63,3 @@ sub tryout {
   print (($t4 == 5) ? "ok $testno\n" : "not ok $testno\n");
   unmemoize 'c23';
 }
-

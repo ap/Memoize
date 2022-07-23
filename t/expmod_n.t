@@ -1,10 +1,6 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize;
 
 my $n = 0;
-
 
 print "1..22\n";
 

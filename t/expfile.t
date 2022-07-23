@@ -1,11 +1,7 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize;
 
 my $n = 0;
 $|=1;
-
 
 if (-e '.fast') {
   print "1..0\n";

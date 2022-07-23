@@ -1,6 +1,3 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize;
 use Config;
 
@@ -52,4 +49,3 @@ print $@ ? "ok 10\n" : "not ok 10 # $@\n";
 # 11
 eval { memoize(sub {}, SCALAR_CACHE => ['YOB GORGLE']) };
 print $@ ? "ok 11\n" : "not ok 11 # $@\n";
-

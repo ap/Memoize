@@ -1,10 +1,5 @@
-#!/usr/bin/perl
-
-use lib 'blib/lib';
 use Memoize 0.45 qw(memoize unmemoize);
 use Fcntl;
-
-# print STDERR $INC{'Memoize.pm'}, "\n";
 
 print "1..10\n";
 
@@ -47,4 +42,3 @@ print ((join '', sort keys %l) eq ''   ? "ok 8\n" : "not ok 8\n");
 () = nul('q');
 print ((join '', sort keys %s) eq 'xy' ? "ok 9\n" : "not ok 9\n");
 print ((join '', sort keys %l) eq 'pq' ? "ok 10\n" : "not ok 10\n");
-

@@ -1,6 +1,3 @@
-#!/usr/bin/perl
-
-use lib qw(. ..);
 use Memoize 0.45 qw(memoize unmemoize);
 use Fcntl;
 # use Memoize::SDBM_File;
@@ -56,14 +53,14 @@ sub tryout {
   $testno++;
   print (($t2 == 5) ? "ok $testno\n" : "not ok $testno\n");
   unmemoize 'c5';
-  
+
   # Now something tricky---we'll memoize c23 with the wrong table that
   # has the 5 already cached.
   memoize 'c23', 
   SCALAR_CACHE => [HASH => \%cache],
   LIST_CACHE => 'FAULT'
     ;
-  
+
   my $t3 = c23();
   my $t4 = c23();
   $testno++;
@@ -72,4 +69,3 @@ sub tryout {
   print (($t4 == 5) ? "ok $testno\n" : "not ok $testno\n");
   unmemoize 'c23';
 }
-

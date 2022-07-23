@@ -44,7 +44,7 @@ sub memoize {
   my $fn = shift;
   my %options = @_;
   my $options = \%options;
-  
+
   unless (defined($fn) && 
 	  (ref $fn eq 'CODE' || ref $fn eq '')) {
     croak "Usage: memoize 'functionname'|coderef {OPTIONS}";
@@ -76,7 +76,7 @@ sub memoize {
   if (defined $normalizer  && ! ref $normalizer) {
     $normalizer = _make_cref($normalizer, $uppack);
   }
-  
+
   my $install_name;
   if (defined $options->{INSTALL}) {
     # INSTALL => name
@@ -144,7 +144,7 @@ sub memoize {
       _my_tie($context, $caches{$context}, $options);  # Croaks on failure
     }
   }
-  
+
   # We should put some more stuff in here eventually.
   # We've been saying that for several versions now.
   # And you know what?  More stuff keeps going in!
@@ -170,7 +170,7 @@ sub _my_tie {
 
   # We already checked to make sure that this works.
   my $shortopt = (ref $fullopt) ? $fullopt->[0] : $fullopt;
-  
+
   return unless defined $shortopt && $shortopt eq 'TIE';
   carp("TIE option to memoize() is deprecated; use HASH instead")
       if $^W;
@@ -213,7 +213,7 @@ sub _memoizer {
   my $orig = shift;		# stringized version of ref to original func.
   my $info = $memotable{$orig};
   my $normalizer = $info->{N};
-  
+
   my $argstr;
   my $context = (wantarray() ? LIST : SCALAR);
 
@@ -270,7 +270,7 @@ sub unmemoize {
   unless (exists $revmemotable{$cref}) {
     croak "Could not unmemoize function `$f', because it was not memoized to begin with";
   }
-  
+
   my $tabent = $memotable{$revmemotable{$cref}};
   unless (defined $tabent) {
     croak "Could not figure out how to unmemoize function `$f'";

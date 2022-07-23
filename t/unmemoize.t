@@ -1,6 +1,3 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize qw(memoize unmemoize);
 
 print "1..5\n";
@@ -23,4 +20,3 @@ print (("@ur" eq "1 2 3") ? "ok 4\n" : "not ok 4\n");
 
 eval { unmemoize('u') };	# Should fail
 print ($@ ? "ok 5\n" : "not ok 5\n");
-

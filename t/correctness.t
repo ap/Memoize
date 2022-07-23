@@ -1,6 +1,3 @@
-#!/usr/bin/perl
-
-use lib '..';
 use Memoize;
 
 print "1..25\n";
@@ -82,7 +79,6 @@ for ($i=0; $i<3; $i++) {
 }
 
 
-
 print "# Normalizers\n";
 
 sub fake_normalize {
@@ -126,4 +122,3 @@ $n++;
 print ((defined &{"undef"}) ? "not ok $n\n" : "ok $n\n"); # Just in case
 
 print "# $n tests in all.\n";
-

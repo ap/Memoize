@@ -1,7 +1,5 @@
-#!/usr/bin/perl
 # -*- mode: perl; perl-indent-level: 2 -*-
 
-use lib qw(. ..);
 use Memoize 0.45 qw(memoize unmemoize);
 # $Memoize::Storable::Verbose = 0;
 
@@ -64,7 +62,7 @@ sub tryout {
   SCALAR_CACHE => [HASH => \%cache],
   LIST_CACHE => 'FAULT'
     ;
-  
+
   my $t3 = c23();
   my $t4 = c23();
   $testno++;
@@ -73,4 +71,3 @@ sub tryout {
   print (($t4 == 5) ? "ok $testno\n" : "not ok $testno\n");
   unmemoize 'c23';
 }
-
