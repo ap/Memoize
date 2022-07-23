@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize;
 
 my $DEBUG = 0;

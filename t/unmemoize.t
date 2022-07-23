@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize qw(memoize unmemoize);
 
 print "1..5\n";

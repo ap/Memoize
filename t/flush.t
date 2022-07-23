@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize qw(flush_cache memoize);
 
 print "1..8\n";
