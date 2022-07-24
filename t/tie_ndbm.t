@@ -19,7 +19,7 @@ sub n {
 
 eval {require Memoize::NDBM_File};
 if ($@) {
-  print "1..0\n";
+  print "1..0 # Skipped: Could not load Memoize::NDBM_File\n";
   exit 0;
 }
 

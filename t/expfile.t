@@ -5,7 +5,7 @@ my $n = 0;
 $|=1;
 
 if (-e '.fast') {
-  print "1..0\n";
+  print "1..0 # Skipped: Slow tests disabled\n";
   exit 0;
 }
 

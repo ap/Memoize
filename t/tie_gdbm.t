@@ -17,7 +17,7 @@ sub n {
 
 eval {require GDBM_File};
 if ($@) {
-  print "1..0\n";
+  print "1..0 # Skipped: Could not load GDBM_File\n";
   exit 0;
 }
 

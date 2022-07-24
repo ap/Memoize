@@ -3,7 +3,7 @@ use Fcntl;
 
 eval {require Memoize::AnyDBM_File};
 if ($@) {
-  print "1..0\n";
+  print "1..0 # Skipped: Could not load Memoize::AnyDBM_File\n";
   exit 0;
 }
 

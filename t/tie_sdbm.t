@@ -17,7 +17,7 @@ sub n {
 
 eval {require SDBM_File};
 if ($@) {
-  print "1..0\n";
+  print "1..0 # Skipped: Could not load SDBM_File\n";
   exit 0;
 }
 

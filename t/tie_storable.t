@@ -6,7 +6,7 @@ use Memoize 0.45 qw(memoize unmemoize);
 
 eval {require Memoize::Storable};
 if ($@) {
-  print "1..0\n";
+  print "1..0 # Skipped: Could not load Memoize::Storable\n";
   exit 0;
 }
 
