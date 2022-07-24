@@ -69,4 +69,4 @@ my $t3 = readfile($FILE);
 ++$n; print ((($READFILE_CALLS == 2) ? '' : 'not '), "ok $n\n");
 ++$n; print ((($t1 ne $t3) ? '' : 'not '), "ok $n\n");
 
-END { 1 while unlink $FILE }
+END { 1 while unlink $FILE || () }
