@@ -7,7 +7,7 @@ my $LIFETIME = 15;
 my $test = 0;
 $| = 1;
 
-if (-e '.fast') {
+if ($ENV{PERL_MEMOIZE_TESTS_FAST_ONLY}) {
   print "1..0 # Skipped: Slow tests disabled\n";
   exit 0;
 }
