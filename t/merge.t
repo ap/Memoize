@@ -30,7 +30,7 @@ my $been_here;
 	last if $been_here++;
 
 	unmemoize 'cacheit';
-	$num_cache_misses = %cache = ();
+	( $num_cache_misses, %cache ) = ();
 
 	memoize 'cacheit', SCALAR_CACHE => [HASH => \%cache], LIST_CACHE => 'MERGE';
 	redo;
