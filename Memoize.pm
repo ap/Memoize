@@ -189,21 +189,15 @@ sub flush_cache {
 # This is the function that manages the memo tables.
 sub _memoizer {
   my $info = shift;
+
   my $normalizer = $info->{N};
-
-  my $argstr;
-
-  if (defined $normalizer) { 
-    if (wantarray) {
-      ($argstr) = &{$normalizer};
-    } else {
-      $argstr = &{$normalizer};
-    }
-    $argstr .= ''; # coerce undef to string without triggering a warning
-  } else {                      # Default normalizer
+  my $argstr = do {
     no warnings 'uninitialized';
-    $argstr = join chr(28),@_;  
-  }
+    defined $normalizer
+      ? ( wantarray ? ( &$normalizer )[0] : &$normalizer )
+        . '' # coerce undef to string while the warning is off
+      : join chr(28), @_;
+  };
 
   if (wantarray) {
     my $cache = $info->{L};
