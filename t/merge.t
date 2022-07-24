@@ -1,6 +1,6 @@
 use strict; use warnings;
 use Memoize qw(memoize unmemoize);
-use Test::More tests => 20;
+use Test::More tests => 18;
 
 my (%cache, $num_cache_misses);
 sub cacheit {
@@ -17,9 +17,7 @@ my $been_here;
 	is +(cacheit())[0], 'cacheit result', 'list context';
 	is $num_cache_misses, 1, 'function not called again';
 
-	is(join(' ', map ref, values %cache), 'ARRAY', 'expected cache structure')
-		? is +(values %cache)[0][0], 'cacheit result', 'expected cached value'
-		: fail 'expected cached value';
+	is_deeply [values %cache], [['cacheit result']], 'expected cached value';
 
 	%cache = ();
 
