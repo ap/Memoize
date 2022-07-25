@@ -54,7 +54,7 @@ sub DESTROY {
 # Maybe establish the keylist at TIEHASH time instead?
 
 sub STORE {
-  warn "Memoize::NDBM_File STORE (@_)\n" if $VERBOSE;
+  warn "Memoize::NDBM_File STORE (@_)\n" if $Verbose;
   my $self = shift;
   $keylist{$self}{$_[0]} = undef;
   $self->SUPER::STORE(@_);
