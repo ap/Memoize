@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize 0.45 qw(memoize unmemoize);
 use Fcntl;
 
@@ -12,6 +13,7 @@ my $s = xx();
 print ((!$s) ? "ok 1\n" : "not ok 1\n");
 my ($a) = xx();
 print (($a) ? "ok 2\n" : "not ok 2\n");
+sub MERGE () { 'MERGE' } # FIXME temporary strict-cleanliness shim
 memoize 'xx', LIST_CACHE => MERGE;
 $s = xx();
 print ((!$s) ? "ok 3\n" : "not ok 3\n");
@@ -22,6 +24,7 @@ print ((!$a) ? "ok 4\n" : "not ok 4\n");
 # Test FAULT
 sub ns {}
 sub na {}
+sub FAULT () { 'FAULT' } # FIXME temporary strict-cleanliness shim
 memoize 'ns', SCALAR_CACHE => FAULT;
 memoize 'na', LIST_CACHE => FAULT;
 eval { my $s = ns() };  # Should fault

@@ -1,6 +1,7 @@
 # -*- mode: perl; perl-indent-level: 2 -*-
 # vim: ts=8 sw=2 sts=2 noexpandtab
 
+use strict; use warnings;
 use Memoize 0.45 qw(memoize unmemoize);
 # $Memoize::Storable::Verbose = 0;
 
@@ -26,6 +27,7 @@ sub n {
 
 print "1..9\n";
 
+my $file;
 $file = "storable$$";
 1 while unlink $file;
 tryout('Memoize::Storable', $file, 1);  # Test 1..4

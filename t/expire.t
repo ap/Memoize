@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize;
 use Memoize::ExpireTest;
 
@@ -20,6 +21,7 @@ memoize 'id',
   LIST_CACHE => 'FAULT';
 $n++; print "ok $n\n";
 
+my $i;
 for $i (1, 2, 3, 1, 2, 1) {
   $n++;
   unless ($i == id($i)) {

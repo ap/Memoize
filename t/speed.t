@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize;
 
 if ($ENV{PERL_MEMOIZE_TESTS_FAST_ONLY}) {
@@ -37,6 +38,7 @@ print "1..6\n";
 # $LONG_RUN is the number of seconds that the function call must last
 # in order for the call to be considered sufficiently long.
 
+my ($N, $COUNT, $RESULT, $ELAPSED, $start, $RESULT2, $ELAPSED2);
 
 sub fib {
   my $n = shift;

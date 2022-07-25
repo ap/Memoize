@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize;
 
 my $n = 0;
@@ -6,8 +7,8 @@ print "1..22\n";
 
 ++$n; print "ok $n\n";
 
+my ($RETURN, %CALLS);
 $RETURN = 1;
-
 %CALLS = ();
 sub call {
 #  print "CALL $_[0] => $RETURN\n";

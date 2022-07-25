@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize qw(memoize unmemoize);
 use Test::More;
 
@@ -17,6 +18,7 @@ plan tests => 7;
 memoize 'reff', LIST_CACHE => 'MERGE';
 memoize 'listf';
 
+my ($s, @a);
 $s = reff();
 @a = reff();
 is(scalar(@a), 1, "reff list context");

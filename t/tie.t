@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize 0.52 qw(memoize unmemoize);
 use Fcntl;
 
@@ -13,6 +14,7 @@ sub i {
   $_[0];
 }
 
+my $ARG;
 $ARG = 'Keith Bostic is a pinhead';
 
 sub c119 { 119 }
@@ -25,6 +27,7 @@ sub n {
   $_[0]+1;
 }
 
+my ($file, @files);
 $file = "md$$";
 @files = ($file, "$file.db", "$file.dir", "$file.pag");
 1 while unlink @files;
@@ -70,6 +73,7 @@ sub tryout {
 
 { 
   my @present = grep -e, @files;
+  my @failed;
   if (@present && (@failed = grep { not unlink } @present)) {
     warn "Can't unlink @failed!  ($!)";
   }

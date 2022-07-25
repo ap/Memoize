@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize 0.45 qw(memoize unmemoize);
 use Fcntl;
 
@@ -23,6 +24,7 @@ if ($@) {
 
 print "1..4\n";
 
+my $file;
 $file = "md$$";
 1 while unlink $file, "$file.dir", "$file.pag", "$file.db";
 tryout('Memoize::NDBM_File', $file, 1);  # Test 1..4

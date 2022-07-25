@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize;
 
 print "1..7\n";
@@ -20,8 +21,10 @@ my $a_normal =  memoize('a1', INSTALL => undef);
 my $a_nomemo =  memoize('a2', INSTALL => undef, NORMALIZER => 'n_diff');
 my $a_allmemo = memoize('a3', INSTALL => undef, NORMALIZER => 'n_null');
 
+my @ARGS;
 @ARGS = (1, 2, 3, 2, 1);
 
+my @res;
 @res  = map { &$a_normal($_) } @ARGS;
 print ((("@res" eq "1-1 2-2 3-3 2-2 1-1") ? '' : 'not '), "ok 1\n");
 
@@ -33,6 +36,7 @@ print ((("@res" eq "1-1 1-1 1-1 1-1 1-1") ? '' : 'not '), "ok 3\n");
 
 		
 # Test fully-qualified name and installation
+my $COUNT;
 $COUNT = 0;
 sub parity { $COUNT++; $_[0] % 2 }
 sub parnorm { $_[0] % 2 }

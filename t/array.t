@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize;
 
 print "1..11\n";
@@ -9,10 +10,12 @@ sub timelist {
 
 memoize('timelist');
 
+my (@t1, @u1);
 @t1 = &timelist(1);
 @u1 = &timelist(1);
 print ((("@t1" eq "@u1") ? '' : 'not '), "ok 1\n");
 
+my (@t7, @u7, $BAD, $i);
 @t7 = &timelist(7);
 print (((@t7 == 7) ? '' : 'not '), "ok 2\n");
 $BAD = 0;
@@ -37,6 +40,7 @@ sub con {
 
 # Same arguments yield different results in different contexts?
 memoize('con');
+my ($s, @a);
 $s = con(1);
 @a = con(1);
 print ((($s == $a[0]) ? 'not ' : ''), "ok 7\n");
@@ -50,8 +54,10 @@ sub n {
   my $arg = shift;
   my $test = shift;
   if (wantarray) {
+	sub ARRAY () { 'ARRAY' } # FIXME temporary strict-cleanliness shim
     print ((($arg eq ARRAY) ? '' : 'not '), "ok $test\n"); # List context
   } else {
+	sub SCALAR () { 'SCALAR' } # FIXME temporary strict-cleanliness shim
     print ((($arg eq SCALAR) ? '' : 'not '), "ok $test\n"); # Scalar context
   }
 }
