@@ -9,8 +9,10 @@
 # You may copy and distribute this program under the
 # same terms as Perl itself.
 
+use strict; use warnings;
+
 package Memoize;
-$VERSION = '1.08';
+our $VERSION = '1.08';
 
 # Compile-time constants
 sub SCALAR () { 0 } 
@@ -28,9 +30,8 @@ use Exporter;
 our $DEBUG;
 use Config;                     # Dammit.
 *import = \&Exporter::import;
-@EXPORT = qw(memoize);
-@EXPORT_OK = qw(unmemoize flush_cache);
-use strict;
+our @EXPORT = qw(memoize);
+our @EXPORT_OK = qw(unmemoize flush_cache);
 
 my %memotable;
 my %revmemotable;

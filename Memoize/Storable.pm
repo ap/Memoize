@@ -1,8 +1,11 @@
+use strict; use warnings;
+
 package Memoize::Storable;
 
 use Storable 1.002 ();
-$VERSION = '1.08';
-$Verbose = 0;
+our $VERSION = '1.08';
+
+our $Verbose;
 
 sub TIEHASH {
   my $package = shift;

@@ -1,3 +1,5 @@
+use strict; use warnings;
+
 package Memoize::ExpireTest;
 
 $VERSION = '1.08';
