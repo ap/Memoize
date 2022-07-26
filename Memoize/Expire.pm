@@ -62,9 +62,7 @@ sub FETCH {
   $DEBUG and print STDERR " >> Fetch cached value for $_[1]\n";
   my ($data, $last_access, $expire_time, $num_uses_left) = _get_item($_[0]{C}{$_[1]});
   $DEBUG and print STDERR " >>   (ttl: ", ($expire_time-time()), ", nuses: $num_uses_left)\n";
-  $num_uses_left--;
-  $last_access = time;
-  _set_header(@_, $data, $last_access, $expire_time, $num_uses_left);
+  _set_header(@_, $data, time, $expire_time, --$num_uses_left);
   $data;
 }
 
