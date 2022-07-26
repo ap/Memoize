@@ -85,6 +85,18 @@ sub EXISTS {
   }
 }
 
+sub FIRSTKEY {
+  scalar keys %{$_[0]{C}};
+  &NEXTKEY;
+}
+
+sub NEXTKEY {
+  while (defined(my $key = each %{$_[0]{C}})) {
+    return substr $key, 1 if 'V' eq substr $key, 0, 1;
+  }
+  undef;
+}
+
 # Arguments: last access time, expire time, number of uses remaining
 sub _make_header {
   pack "N N n", @_;
