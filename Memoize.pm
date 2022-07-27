@@ -37,6 +37,12 @@ my %revmemotable;
 my @CONTEXT_TAGS = qw(MERGE TIE MEMORY FAULT HASH);
 my %IS_CACHE_TAG = map {($_ => 1)} @CONTEXT_TAGS;
 
+sub CLONE {
+  my @info = values %memotable;
+  %revmemotable = map +($_->{MEMOIZED} => ''.$_->{U}), @info;
+  %memotable = map +($_->{U} => $_), @info;
+}
+
 # Raise an error if the user tries to specify one of thesepackage as a
 # tie for LIST_CACHE
 
