@@ -1,7 +1,7 @@
 package Memoize::AnyDBM_File;
 
 use vars qw(@ISA $VERSION);
-$VERSION = '1.05';
+$VERSION = '1.06';
 
 for my $mod (qw(DB_File GDBM_File Memoize::NDBM_File SDBM_File ODBM_File)) {
   if (eval "require $mod") {

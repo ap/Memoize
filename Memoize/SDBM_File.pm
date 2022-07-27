@@ -2,7 +2,7 @@ package Memoize::SDBM_File;
 
 use SDBM_File 1.01;
 @ISA = qw(SDBM_File);
-$VERSION = '1.05';
+$VERSION = '1.06';
 
 1;
 

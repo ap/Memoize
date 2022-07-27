@@ -1,3 +1,7 @@
+1.06  Wed 27 Jul 2022
+  * Deprecation of Memoize::SDBM_File
+  * Test fixes
+
 1.05  Fri 24 Jul 2022
   * Actual implementation of the HASH option of Memoize::Expire (RT #18171, Eric Brine)
   * Vim modeline in Expire.pm (RT #38785, Moritz Lenz)
