@@ -100,7 +100,7 @@ sub memoize {
     $install_name = $uppack . '::' . $install_name
 	unless $install_name =~ /::/;
     no strict;
-    local($^W) = 0;	       # ``Subroutine $install_name redefined at ...''
+    no warnings 'redefine';
     *{$install_name} = $wrapper; # Install memoized version
   }
 
@@ -184,7 +184,7 @@ sub _my_tie {
 
   return unless defined $shortopt && $shortopt eq 'TIE';
   carp("TIE option to memoize() is deprecated; use HASH instead")
-      if $^W;
+      if warnings::enabled('all');
 
   my @args = ref $fullopt ? @$fullopt : ();
   shift @args;
@@ -238,7 +238,7 @@ sub _memoizer {
       croak "Internal error \#41; context was neither LIST nor SCALAR\n";
     }
   } else {                      # Default normalizer
-    local $^W = 0;
+    no warnings 'uninitialized';
     $argstr = join chr(28),@_;  
   }
 
@@ -289,7 +289,7 @@ sub unmemoize {
   my $name = $tabent->{NAME};
   if (defined $name) {
     no strict;
-    local($^W) = 0;	       # ``Subroutine $install_name redefined at ...''
+    no warnings 'redefine';
     *{$name} = $tabent->{U}; # Replace with original function
   }
   delete $memotable{$revmemotable{$cref}};
