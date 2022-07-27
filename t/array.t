@@ -1,20 +1,15 @@
 use Memoize;
 
-if ($ENV{PERL_MEMOIZE_TESTS_FAST_ONLY}) {
-  print "1..0 # Skipped: Slow tests disabled\n";
-  exit 0;
-}
-
 print "1..11\n";
 
+my $timestamp;
 sub timelist {
-  return (time) x $_[0];
+  return (++$timestamp) x $_[0];
 }
 
 memoize('timelist');
 
 @t1 = &timelist(1);
-sleep 2;
 @u1 = &timelist(1);
 print ((("@t1" eq "@u1") ? '' : 'not '), "ok 1\n");
 
@@ -26,7 +21,6 @@ for ($i = 1; $i < 7; $i++) {
 }
 print (($BAD ? 'not ' : ''), "ok 3\n");
 
-sleep 2;
 @u7 = &timelist(7);
 print (((@u7 == 7) ? '' : 'not '), "ok 4\n");
 $BAD = 0;
