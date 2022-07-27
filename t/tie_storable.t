@@ -24,12 +24,6 @@ sub n {
   $_[0]+1;
 }
 
-eval {require Storable};
-if ($@) {
-  print "1..0\n";
-  exit 0;
-}
-
 print "1..9\n";
 
 $file = "storable$$";

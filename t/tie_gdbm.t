@@ -29,7 +29,6 @@ tryout('GDBM_File', $file, 1);  # Test 1..4
 1 while unlink $file, "$file.dir", "$file.pag";
 
 sub tryout {
-  require GDBM_File;
   my ($tiepack, $file, $testno) = @_;
 
   tie my %cache => $tiepack, $file, &GDBM_File::GDBM_NEWDB, 0666
