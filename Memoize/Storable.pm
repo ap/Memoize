@@ -1,7 +1,7 @@
 package Memoize::Storable;
 
 use Storable 1.002 ();
-$VERSION = '1.06';
+$VERSION = '1.07';
 $Verbose = 0;
 
 sub TIEHASH {

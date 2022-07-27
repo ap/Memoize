@@ -1,8 +1,14 @@
+1.07  Thu 28 Jul 2022
+  * Thread safety (RT #21707)
+  * Support for reference values in Memoize::Expire (RT #38344)
+  * Support for iterating tied Memoize::Expire hashes (RT #124507)
+  * Advisory locking in Memoize::Storable (RT #133859)
+
 1.06  Wed 27 Jul 2022
   * Deprecation of Memoize::SDBM_File
   * Test fixes
 
-1.05  Fri 24 Jul 2022
+1.05  Sun 24 Jul 2022
   * Actual implementation of the HASH option of Memoize::Expire (RT #18171, Eric Brine)
   * Vim modeline in Expire.pm (RT #38785, Moritz Lenz)
   * Fix for minor memory leak in unmemoize() (RT #52819, Joshua I. Miller)
