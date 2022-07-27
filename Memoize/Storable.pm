@@ -1,13 +1,13 @@
 package Memoize::Storable;
 
-use Storable ();
+use Storable 1.002 ();
 $VERSION = '1.06';
 $Verbose = 0;
 
 sub TIEHASH {
   my $package = shift;
   my $filename = shift;
-  my $truehash = (-e $filename) ? Storable::retrieve($filename) : {};
+  my $truehash = (-e $filename) ? Storable::lock_retrieve($filename) : {};
   my %options;
   print STDERR "Memoize::Storable::TIEHASH($filename, @_)\n" if $Verbose;
   @options{@_} = ();
@@ -41,9 +41,9 @@ sub DESTROY {
   my $self= shift;
   print STDERR "Memoize::Storable::DESTROY(@_)\n" if $Verbose;
   if (exists $self->{OPTIONS}{'nstore'}) {
-    Storable::nstore($self->{H}, $self->{FILENAME});
+    Storable::lock_nstore($self->{H}, $self->{FILENAME});
   } else {
-    Storable::store($self->{H}, $self->{FILENAME});
+    Storable::lock_store($self->{H}, $self->{FILENAME});
   }
 }
 
