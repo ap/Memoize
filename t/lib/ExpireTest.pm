@@ -1,8 +1,7 @@
 use strict; use warnings;
 
-package Memoize::ExpireTest;
+package ExpireTest;
 
-$VERSION = '1.08';
 my %cache;
 
 sub TIEHASH {	
@@ -38,7 +37,7 @@ __END__
 
 =head1 NAME
 
-Memoize::ExpireTest - test for Memoize expiration semantics
+ExpireTest - test for Memoize expiration semantics
 
 =head1 DESCRIPTION
 

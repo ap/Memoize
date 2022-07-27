@@ -1,6 +1,7 @@
 use strict; use warnings;
 use Memoize;
-use Memoize::ExpireTest;
+use lib 't/lib';
+use ExpireTest;
 
 my $n = 0;
 
@@ -15,7 +16,7 @@ sub id {
   $arg;
 }
 
-tie my %cache => 'Memoize::ExpireTest';
+tie my %cache => 'ExpireTest';
 memoize 'id', 
   SCALAR_CACHE => [HASH => \%cache], 
   LIST_CACHE => 'FAULT';
@@ -38,7 +39,7 @@ for $i (1, 2, 3) {
   print "ok $n\n";
 }
 
-Memoize::ExpireTest::expire(1);
+ExpireTest::expire(1);
 
 for $i (1, 2, 3) {
   my $v = id($i);
@@ -52,8 +53,8 @@ for $i (1, 2, 3) {
   print "ok $n\n";
 }
 
-Memoize::ExpireTest::expire(1);
-Memoize::ExpireTest::expire(2);
+ExpireTest::expire(1);
+ExpireTest::expire(2);
 
 for $i (1, 2, 3) {
   my $v = id($i);
