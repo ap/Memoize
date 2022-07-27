@@ -25,7 +25,7 @@ sub LIST () { 1 }
 
 use Carp;
 use Exporter;
-use vars qw($DEBUG);
+our $DEBUG;
 use Config;                     # Dammit.
 *import = \&Exporter::import;
 @EXPORT = qw(memoize);

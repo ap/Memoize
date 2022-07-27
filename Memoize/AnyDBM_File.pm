@@ -1,8 +1,7 @@
 package Memoize::AnyDBM_File;
 
-use vars qw(@ISA $VERSION);
-$VERSION = '1.08';
-@ISA = qw(DB_File GDBM_File Memoize::NDBM_File SDBM_File ODBM_File) unless @ISA;
+our $VERSION = '1.08';
+our @ISA = qw(DB_File GDBM_File Memoize::NDBM_File SDBM_File ODBM_File) unless @ISA;
 
 for my $mod (@ISA) {
   if (eval "require $mod") {

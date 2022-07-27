@@ -2,7 +2,7 @@
 package Memoize::Expire;
 # require 5.00556;
 use Carp;
-use vars qw($DEBUG);
+our $DEBUG;
 $VERSION = '1.08';
 
 # The format of the metadata is:
