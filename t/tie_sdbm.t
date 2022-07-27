@@ -1,7 +1,5 @@
 use Memoize 0.45 qw(memoize unmemoize);
 use Fcntl;
-# use Memoize::SDBM_File;
-# $Memoize::GDBM_File::Verbose = 0;
 
 sub i {
   $_[0];
@@ -17,7 +15,7 @@ sub n {
   $_[0]+1;
 }
 
-eval {require Memoize::SDBM_File};
+eval {require SDBM_File};
 if ($@) {
   print "1..0\n";
   exit 0;
@@ -30,7 +28,7 @@ $file = "md$$";
 if ( $^O eq 'VMS' ) {
     1 while unlink "$file.sdbm_dir";
 }
-tryout('Memoize::SDBM_File', $file, 1);  # Test 1..4
+tryout('SDBM_File', $file, 1);  # Test 1..4
 1 while unlink $file, "$file.dir", "$file.pag";
 if ( $^O eq 'VMS' ) {
     1 while unlink "$file.sdbm_dir";
