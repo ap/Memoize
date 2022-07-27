@@ -1,8 +1,7 @@
 use strict; use warnings;
 
-package Memoize::ExpireFile;
+package ExpireFile;
 
-$VERSION = '1.08';
 use Carp;
 
 my $Zero = pack("N", 0);
@@ -49,7 +48,7 @@ __END__
 
 =head1 NAME
 
-Memoize::ExpireFile - test for Memoize expiration semantics
+ExpireFile - test for Memoize expiration semantics
 
 =head1 DESCRIPTION
 

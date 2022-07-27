@@ -1,5 +1,6 @@
 use strict; use warnings;
 use Memoize;
+use lib 't/lib';
 
 my $n = 0;
 $|=1;
@@ -32,11 +33,11 @@ sub readfile {
   $data;
 }
 
-require Memoize::ExpireFile;
+require ExpireFile;
 # (2)
 ++$n; print "ok $n\n";
 
-tie my %cache => 'Memoize::ExpireFile';
+tie my %cache => 'ExpireFile';
 memoize 'readfile',
     SCALAR_CACHE => [HASH => \%cache],
     LIST_CACHE => 'FAULT'
