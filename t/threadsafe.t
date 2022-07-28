@@ -1,8 +1,10 @@
 use strict; use warnings;
 
-use threads;
 use Memoize qw(memoize unmemoize);
-use Test::More tests => 8;
+use Test::More
+	eval { require threads; 1 }
+		? ( tests => 8 )
+		: ( skip_all => $@ );
 
 my $i;
 sub count_up { ++$i }
