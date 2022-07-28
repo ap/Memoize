@@ -34,14 +34,12 @@ our @EXPORT = qw(memoize);
 our @EXPORT_OK = qw(unmemoize flush_cache);
 
 my %memotable;
-my %revmemotable;
 my @CONTEXT_TAGS = qw(MERGE TIE MEMORY FAULT HASH);
 my %IS_CACHE_TAG = map {($_ => 1)} @CONTEXT_TAGS;
 
 sub CLONE {
   my @info = values %memotable;
-  %revmemotable = map +($_->{MEMOIZED} => ''.$_->{U}), @info;
-  %memotable = map +($_->{U} => $_), @info;
+  %memotable = map +($_->{WRAPPER} => $_), @info;
 }
 
 # Raise an error if the user tries to specify one of thesepackage as a
@@ -69,10 +67,11 @@ sub memoize {
   # 'usethreads' works around a bug in threadperl having to do with
   # magic goto.  It would be better to fix the bug and use the magic
   # goto version everywhere.
+  my $info;
   my $wrapper = 
       $Config{usethreads} 
-        ? eval "sub $proto { &_memoizer(\$cref, \@_); }" 
-        : eval "sub $proto { unshift \@_, \$cref; goto &_memoizer; }";
+        ? eval "sub $proto { &_memoizer(\$info, \@_); }"
+        : eval "sub $proto { unshift \@_, \$info; goto &_memoizer; }";
 
   my $normalizer = $options{NORMALIZER};
   if (defined $normalizer  && ! ref $normalizer) {
@@ -90,8 +89,6 @@ sub memoize {
     no warnings 'redefine';
     *{$install_name} = $wrapper; # Install memoized version
   }
-
-  $revmemotable{$wrapper} = "" . $cref; # Turn code ref into hash key
 
   # These will be the caches
   my %caches;
@@ -143,15 +140,19 @@ sub memoize {
     }
   }
 
-  $memotable{$cref} = 
+  $info =
   {
     N => $normalizer,
     U => $cref,
-    MEMOIZED => $wrapper,
     NAME => $install_name,
     S => $caches{SCALAR},
     L => $caches{LIST},
     MERGED => $options{MERGED},
+  };
+
+  $memotable{$wrapper} = {
+    INFO    => $info,
+    WRAPPER => $wrapper, # cannot be in $info because $wrapper captures $info
   };
 
   $wrapper			# Return just memoized version
@@ -184,7 +185,7 @@ sub _my_tie {
 
 sub flush_cache {
   my $func = _make_cref($_[0], scalar caller);
-  my $info = $memotable{$revmemotable{$func}};
+  my $info = $memotable{$func}{INFO};
   die "$func not memoized" unless defined $info;
   for my $context (qw(S L)) {
     my $cache = $info->{$context};
@@ -201,8 +202,7 @@ sub flush_cache {
 
 # This is the function that manages the memo tables.
 sub _memoizer {
-  my $orig = shift;		# stringized version of ref to original func.
-  my $info = $memotable{$orig};
+  my $info = shift;
   my $normalizer = $info->{N};
 
   my $argstr;
@@ -258,11 +258,11 @@ sub unmemoize {
   my $uppack = caller;
   my $cref = _make_cref($f, $uppack);
 
-  unless (exists $revmemotable{$cref}) {
+  unless (exists $memotable{$cref}) {
     croak "Could not unmemoize function `$f', because it was not memoized to begin with";
   }
 
-  my $tabent = $memotable{$revmemotable{$cref}};
+  my $tabent = $memotable{$cref}{INFO};
   unless (defined $tabent) {
     croak "Could not figure out how to unmemoize function `$f'";
   }
@@ -272,21 +272,8 @@ sub unmemoize {
     no warnings 'redefine';
     *{$name} = $tabent->{U}; # Replace with original function
   }
-  delete $memotable{$revmemotable{$cref}};
-  delete $revmemotable{$cref};
+  delete $memotable{$cref};
 
-  # This removes the last reference to the (possibly tied) memo tables
-  # my ($old_function, $memotabs) = @{$tabent}{'U','S','L'};
-  # undef $tabent; 
-
-#  # Untie the memo tables if they were tied.
-#  my $i;
-#  for $i (0,1) {
-#    if (tied %{$memotabs->[$i]}) {
-#      warn "Untying hash #$i\n";
-#      untie %{$memotabs->[$i]};
-#    }
-#  }
 
   $tabent->{U};
 }
