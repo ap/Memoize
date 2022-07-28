@@ -12,10 +12,6 @@ use strict; use warnings;
 package Memoize;
 our $VERSION = '1.09';
 
-# Compile-time constants
-sub SCALAR () { 0 } 
-sub LIST () { 1 } 
-
 use Carp;
 use Exporter;
 our $DEBUG;
@@ -196,15 +192,12 @@ sub _memoizer {
   my $normalizer = $info->{N};
 
   my $argstr;
-  my $context = (wantarray() ? LIST : SCALAR);
 
   if (defined $normalizer) { 
-    if ($context == LIST) {
+    if (wantarray) {
       ($argstr) = &{$normalizer};
-    } elsif ($context == SCALAR) {
+    } else {
       $argstr = &{$normalizer};
-    } else { #
-      croak "Internal error \#41; context was neither LIST nor SCALAR\n";
     }
     $argstr .= ''; # coerce undef to string without triggering a warning
   } else {                      # Default normalizer
@@ -212,7 +205,7 @@ sub _memoizer {
     $argstr = join chr(28),@_;  
   }
 
-  if ($context == LIST) {
+  if (wantarray) {
     my $cache = $info->{L};
     _crap_out($info->{NAME}, 'list') unless $cache;
     if (exists $cache->{$argstr}) {
@@ -222,7 +215,7 @@ sub _memoizer {
       $cache->{$argstr} = \@q;
       @q;
     }
-  } elsif ($context == SCALAR) {
+  } else {
     my $cache = $info->{S};
     _crap_out($info->{NAME}, 'scalar') unless $cache;
     if (exists $cache->{$argstr}) { 
@@ -238,8 +231,6 @@ sub _memoizer {
       }
       $val;
     }
-  } else {
-    croak "Internal error \#42; context was neither LIST nor SCALAR\n";
   }
 }
 
