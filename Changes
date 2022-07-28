@@ -1,3 +1,6 @@
+1.08  Thu 28 Jul 2022
+  * Skip for thread safety tests on unthreaded perls
+
 1.07  Thu 28 Jul 2022
   * Thread safety (RT #21707)
   * Support for reference values in Memoize::Expire (RT #38344)

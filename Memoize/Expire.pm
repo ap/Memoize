@@ -3,7 +3,7 @@ package Memoize::Expire;
 # require 5.00556;
 use Carp;
 use vars qw($DEBUG);
-$VERSION = '1.07';
+$VERSION = '1.08';
 
 # The format of the metadata is:
 # (4-byte number of last-access-time)  (For LRU when I implement it)
