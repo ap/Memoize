@@ -4,65 +4,12 @@ use NDBM_File;
 @ISA = qw(NDBM_File);
 $VERSION = '1.08';
 
-$Verbose = 0;
-
-sub AUTOLOAD {
-  warn "Nonexistent function $AUTOLOAD invoked in Memoize::NDBM_File\n";
-}
-
-sub import {
-  warn "Importing Memoize::NDBM_File\n" if $Verbose;
-}
-
-
-my %keylist;
-
-# This is so ridiculous...
-sub _backhash {
-  my $self = shift;
-  my %fakehash;
-  my $k; 
-  for ($k = $self->FIRSTKEY(); defined $k; $k = $self->NEXTKEY($k)) {
-    $fakehash{$k} = undef;
-  }
-  $keylist{$self} = \%fakehash;
-}
-
+# NDBM_File cannot store undef and will store an empty string if you try
+# but it does return undef if you try to read a non-existent key
+# so we can emulate exists() using defined()
 sub EXISTS {
-  warn "Memoize::NDBM_File EXISTS (@_)\n" if $Verbose;
-  my $self = shift;
-  _backhash($self)  unless exists $keylist{$self};
-  my $r = exists $keylist{$self}{$_[0]};
-  warn "Memoize::NDBM_File EXISTS (@_) ==> $r\n" if $Verbose;
-  $r;
+	defined shift->FETCH(@_);
 }
-
-sub DEFINED {
-  warn "Memoize::NDBM_File DEFINED (@_)\n" if $Verbose;
-  my $self = shift;
-  _backhash($self)  unless exists $keylist{$self};
-  defined $keylist{$self}{$_[0]};
-}
-
-sub DESTROY {
-  warn "Memoize::NDBM_File DESTROY (@_)\n" if $Verbose;
-  my $self = shift;
-  delete $keylist{$self};   # So much for reference counting...
-  $self->SUPER::DESTROY(@_);
-}
-
-# Maybe establish the keylist at TIEHASH time instead?
-
-sub STORE {
-  warn "Memoize::NDBM_File STORE (@_)\n" if $Verbose;
-  my $self = shift;
-  $keylist{$self}{$_[0]} = undef;
-  $self->SUPER::STORE(@_);
-}
-
-
-
-# Inherit FETCH and TIEHASH
 
 1;
 
