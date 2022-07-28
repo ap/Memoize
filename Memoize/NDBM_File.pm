@@ -11,6 +11,10 @@ sub EXISTS {
 	defined shift->FETCH(@_);
 }
 
+# Perl 5.37.3 adds this EXISTS emulation to NDBM_File itself
+delete $Memoize::NDBM_File::{'EXISTS'}
+	if eval { NDBM_File->VERSION( '1.16' ) };
+
 1;
 
 __END__
@@ -23,6 +27,10 @@ Memoize::NDBM_File - glue to provide EXISTS for NDBM_File for Storable use
 
 =head1 DESCRIPTION
 
-See L<Memoize>.
+This class provides L<EXISTS|perltie/C<EXISTS>> support for L<NDBM_File>.
+
+L<In Perl 5.37.3|https://github.com/Perl/perl5/commit/c0a1a377c02ed789f5eff667f46a2314a05c5a4c>,
+support for C<EXISTS> was added to L<NDBM_File> itself.
+Code which requires such a perl should simply use L<NBDM_File> directly.
 
 =cut
