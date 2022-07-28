@@ -199,11 +199,11 @@ sub _memoizer {
   my $context = (wantarray() ? LIST : SCALAR);
 
   if (defined $normalizer) { 
-    if ($context == SCALAR) {
-      $argstr = &{$normalizer};
-    } elsif ($context == LIST) {
+    if ($context == LIST) {
       ($argstr) = &{$normalizer};
-    } else {
+    } elsif ($context == SCALAR) {
+      $argstr = &{$normalizer};
+    } else { #
       croak "Internal error \#41; context was neither LIST nor SCALAR\n";
     }
     $argstr .= ''; # coerce undef to string without triggering a warning
@@ -212,7 +212,17 @@ sub _memoizer {
     $argstr = join chr(28),@_;  
   }
 
-  if ($context == SCALAR) {
+  if ($context == LIST) {
+    my $cache = $info->{L};
+    _crap_out($info->{NAME}, 'list') unless $cache;
+    if (exists $cache->{$argstr}) {
+      return @{$cache->{$argstr}};
+    } else {
+      my @q = &{$info->{U}};
+      $cache->{$argstr} = \@q;
+      @q;
+    }
+  } elsif ($context == SCALAR) {
     my $cache = $info->{S};
     _crap_out($info->{NAME}, 'scalar') unless $cache;
     if (exists $cache->{$argstr}) { 
@@ -227,16 +237,6 @@ sub _memoizer {
 	$cache->{$argstr} = $val;
       }
       $val;
-    }
-  } elsif ($context == LIST) {
-    my $cache = $info->{L};
-    _crap_out($info->{NAME}, 'list') unless $cache;
-    if (exists $cache->{$argstr}) {
-      return @{$cache->{$argstr}};
-    } else {
-      my @q = &{$info->{U}};
-      $cache->{$argstr} = \@q;
-      @q;
     }
   } else {
     croak "Internal error \#42; context was neither LIST nor SCALAR\n";
