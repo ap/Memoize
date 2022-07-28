@@ -3,8 +3,6 @@
 
 # Memoize.pm
 #
-# Transparent memoization of idempotent functions
-#
 # Copyright 1998, 1999, 2000, 2001, 2012 M. J. Dominus.
 # You may copy and distribute this program under the
 # same terms as Perl itself.
@@ -17,13 +15,6 @@ our $VERSION = '1.08';
 # Compile-time constants
 sub SCALAR () { 0 } 
 sub LIST () { 1 } 
-
-
-#
-# Usage memoize(functionname/ref,
-#               { NORMALIZER => coderef, INSTALL => name,
-#                 LIST_CACHE => descriptor, SCALAR_CACHE => descriptor }
-#
 
 use Carp;
 use Exporter;
@@ -44,7 +35,6 @@ sub CLONE {
 
 # Raise an error if the user tries to specify one of thesepackage as a
 # tie for LIST_CACHE
-
 my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File NDBM_File);
 
 sub memoize {
@@ -273,7 +263,6 @@ sub unmemoize {
     *{$name} = $tabent->{U}; # Replace with original function
   }
   delete $memotable{$cref};
-
 
   $tabent->{U};
 }

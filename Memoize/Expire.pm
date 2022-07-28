@@ -1,7 +1,7 @@
 use strict; use warnings;
 
 package Memoize::Expire;
-# require 5.00556;
+
 use Carp;
 our $DEBUG;
 our $VERSION = '1.08';
@@ -10,10 +10,6 @@ our $VERSION = '1.08';
 # (4-byte number of last-access-time)  (For LRU when I implement it)
 # (4-byte expiration time: unsigned seconds-since-unix-epoch)
 # (2-byte number-of-uses-before-expire)
-
-# Usage:  memoize func 
-#         TIE => [Memoize::Expire, LIFETIME => sec, NUM_USES => n,
-#                 TIE => [...] ]
 
 BEGIN {
   eval {require Time::HiRes};
