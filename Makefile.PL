@@ -1,3 +1,5 @@
+use 5.006;
+
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
@@ -12,6 +14,7 @@ WriteMakefile(
 		},
 		prereqs => {
 		  runtime => {
+		    requires => { perl => '5.006' },
 		    suggests => { Storable => '1.002' },
 		  },
 		  test => {
