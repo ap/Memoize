@@ -52,7 +52,6 @@ my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File NDBM_
 sub memoize {
   my $fn = shift;
   my %options = @_;
-  my $options = \%options;
 
   unless (defined($fn) && 
 	  (ref $fn eq 'CODE' || ref $fn eq '')) {
@@ -140,7 +139,7 @@ sub memoize {
     my $context;
     foreach $context (qw(SCALAR LIST)) {
       # If the relevant option wasn't `TIE', this call does nothing.
-      _my_tie($context, $caches{$context}, $options);  # Croaks on failure
+      _my_tie($context, $caches{$context}, $options{"${context}_CACHE"}); # Croaks on failure
     }
   }
 
@@ -164,8 +163,7 @@ sub memoize {
 
 # This function tries to load a tied hash class and tie the hash to it.
 sub _my_tie {
-  my ($context, $hash, $options) = @_;
-  my $fullopt = $options->{"${context}_CACHE"};
+  my ($context, $hash, $fullopt) = @_;
 
   # We already checked to make sure that this works.
   my ($shortopt, @args) = ref $fullopt ? @$fullopt : $fullopt;
