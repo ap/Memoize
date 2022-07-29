@@ -143,19 +143,15 @@ sub memoize {
     }
   }
 
-  # We should put some more stuff in here eventually.
-  # We've been saying that for several versions now.
-  # And you know what?  More stuff keeps going in!
   $memotable{$cref} = 
   {
-    O => $options,  # Short keys here for things we need to access frequently
     N => $normalizer,
     U => $cref,
     MEMOIZED => $wrapper,
-    PACKAGE => $uppack,
     NAME => $install_name,
     S => $caches{SCALAR},
     L => $caches{LIST},
+    MERGED => $options{MERGED},
   };
 
   $wrapper			# Return just memoized version
@@ -230,12 +226,12 @@ sub _memoizer {
     my $cache = $info->{S};
     _crap_out($info->{NAME}, 'scalar') unless $cache;
     if (exists $cache->{$argstr}) { 
-      return $info->{O}{MERGED}
+      return $info->{MERGED}
         ? $cache->{$argstr}[0] : $cache->{$argstr};
     } else {
       my $val = &{$info->{U}}(@_);
       # Scalars are considered to be lists; store appropriately
-      if ($info->{O}{MERGED}) {
+      if ($info->{MERGED}) {
 	$cache->{$argstr} = [$val];
       } else {
 	$cache->{$argstr} = $val;
