@@ -2,7 +2,7 @@ use strict; use warnings;
 
 use Memoize qw(memoize unmemoize);
 use Test::More
-	eval { require threads; 1 }
+	("$]" < 5.009 || "$]" >= 5.010001) && eval { require threads; 1 }
 		? ( tests => 8 )
 		: ( skip_all => $@ );
 
