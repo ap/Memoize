@@ -168,14 +168,12 @@ sub _my_tie {
   my $fullopt = $options->{"${context}_CACHE"};
 
   # We already checked to make sure that this works.
-  my $shortopt = (ref $fullopt) ? $fullopt->[0] : $fullopt;
+  my ($shortopt, @args) = ref $fullopt ? @$fullopt : $fullopt;
 
   return unless defined $shortopt && $shortopt eq 'TIE';
   carp("TIE option to memoize() is deprecated; use HASH instead")
       if warnings::enabled('all');
 
-  my @args = ref $fullopt ? @$fullopt : ();
-  shift @args;
   my $module = shift @args;
   if ($context eq 'LIST' && $scalar_only{$module}) {
     croak("You can't use $module for LIST_CACHE because it can only store scalars");
