@@ -60,16 +60,10 @@ sub memoize {
   }
 
   my $uppack = caller;		# TCL me Elmo!
-  my $cref;			# Code reference to original function
   my $name = (ref $fn ? undef : $fn);
-
-  # Convert function names to code references
-  $cref = &_make_cref($fn, $uppack);
-
-  # Locate function prototype, if any
+  my $cref = _make_cref($fn, $uppack);
   my $proto = prototype $cref;
-  if (defined $proto) { $proto = "($proto)" }
-  else { $proto = "" }
+  $proto = defined $proto ? "($proto)" : '';
 
   # I would like to get rid of the eval, but there seems not to be any
   # other way to set the prototype properly.  The switch here for
@@ -86,16 +80,9 @@ sub memoize {
     $normalizer = _make_cref($normalizer, $uppack);
   }
 
-  my $install_name;
-  if (defined $options->{INSTALL}) {
-    # INSTALL => name
-    $install_name = $options->{INSTALL};
-  } elsif (! exists $options->{INSTALL}) {
-    # No INSTALL option provided; use original name if possible
-    $install_name = $name;
-  } else {
-    # INSTALL => undef  means don't install
-  }
+  my $install_name = exists $options{INSTALL}
+    ? $options{INSTALL} # use given name (or, if undef: do not install)
+    : $name; # no INSTALL option provided: default to original name if possible
 
   if (defined $install_name) {
     $install_name = $uppack . '::' . $install_name
