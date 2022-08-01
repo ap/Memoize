@@ -10,7 +10,15 @@ WriteMakefile(
 		  repository => { type => 'git', map +( url => "$_.git", web => $_ ), 'https://github.com/ap/Memoize' },
 		  bugtracker => { web => 'https://rt.cpan.org/Dist/Display.html?Name=Memoize' }
 		},
-		prereqs => {},
+		prereqs => {
+		  runtime => {
+		    suggests => { Storable => '1.002' },
+		  },
+		  test => {
+		    requires => { 'Test::More' => 0 },
+		  },
+		},
+		dynamic_config => 0,
 	      } ) : () ),
 	      VERSION_FROM => 'Memoize.pm',
 #	      'linkext' => {LINKTYPE => ''},
