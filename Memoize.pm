@@ -27,7 +27,7 @@ use Carp;
 use Exporter;
 use vars qw($DEBUG);
 use Config;                     # Dammit.
-@ISA = qw(Exporter);
+*import = \&Exporter::import;
 @EXPORT = qw(memoize);
 @EXPORT_OK = qw(unmemoize flush_cache);
 use strict;
