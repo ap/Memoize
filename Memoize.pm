@@ -10,7 +10,7 @@
 use strict; use warnings;
 
 package Memoize;
-our $VERSION = '1.08';
+our $VERSION = '1.09';
 
 # Compile-time constants
 sub SCALAR () { 0 } 

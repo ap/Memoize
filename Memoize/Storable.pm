@@ -1,9 +1,9 @@
 use strict; use warnings;
 
 package Memoize::Storable;
+our $VERSION = '1.09';
 
 use Storable 1.002 ();
-our $VERSION = '1.08';
 
 our $Verbose;
 

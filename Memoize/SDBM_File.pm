@@ -1,10 +1,10 @@
 use strict; use warnings;
 
 package Memoize::SDBM_File;
+our $VERSION = '1.09';
 
 use SDBM_File 1.01;
 our @ISA = qw(SDBM_File);
-our $VERSION = '1.08';
 
 1;
 

@@ -1,3 +1,9 @@
+1.09  Mon 01 Aug 2022
+  * Skip for thread safety tests on Perl 5.10.0
+  * Drastically improved Memoized::NDBM_File EXISTS shim
+  * Minimum Perl version set at 5.6
+  * Removal of Memoize::ExpireTest and Memoize::ExpireFile
+
 1.08  Thu 28 Jul 2022
   * Skip for thread safety tests on unthreaded perls
 

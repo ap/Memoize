@@ -1,10 +1,10 @@
 use strict; use warnings;
 
 package Memoize::Expire;
+our $VERSION = '1.09';
 
 use Carp;
 our $DEBUG;
-our $VERSION = '1.08';
 
 # The format of the metadata is:
 # (4-byte number of last-access-time)  (For LRU when I implement it)

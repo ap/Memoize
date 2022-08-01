@@ -1,10 +1,10 @@
 use strict; use warnings;
 
 package Memoize::NDBM_File;
+our $VERSION = '1.09';
 
 use NDBM_File;
 our @ISA = qw(NDBM_File);
-our $VERSION = '1.08';
 
 # NDBM_File cannot store undef and will store an empty string if you try
 # but it does return undef if you try to read a non-existent key
