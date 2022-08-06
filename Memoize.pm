@@ -93,16 +93,6 @@ sub memoize {
     }
   }
 
-  my $info =
-  {
-    N => $normalizer,
-    U => $cref,
-    NAME => $install_name,
-    S => $caches{SCALAR},
-    L => $caches{LIST},
-    MERGED => $options{MERGED},
-  };
-
   my $wrapper = _wrap($install_name, $cref, $normalizer, $options{MERGED}, \%caches);
 
   if (defined $install_name) {
@@ -112,7 +102,10 @@ sub memoize {
   }
 
   $memotable{$wrapper} = {
-    INFO    => $info,
+    L => $caches{LIST},
+    S => $caches{SCALAR},
+    U => $cref,
+    NAME => $install_name,
     WRAPPER => $wrapper,
   };
 
@@ -121,7 +114,7 @@ sub memoize {
 
 sub flush_cache {
   my $func = _make_cref($_[0], scalar caller);
-  my $info = $memotable{$func}{INFO};
+  my $info = $memotable{$func};
   die "$func not memoized" unless defined $info;
   for my $context (qw(S L)) {
     my $cache = $info->{$context};
@@ -186,7 +179,7 @@ sub unmemoize {
     croak "Could not unmemoize function `$f', because it was not memoized to begin with";
   }
 
-  my $tabent = $memotable{$cref}{INFO};
+  my $tabent = $memotable{$cref};
   unless (defined $tabent) {
     croak "Could not figure out how to unmemoize function `$f'";
   }
