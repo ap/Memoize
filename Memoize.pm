@@ -80,14 +80,8 @@ sub memoize {
   my %caches;
   for my $context (qw(SCALAR LIST)) {
     # suppress subsequent 'uninitialized value' warnings
-    $options{"${context}_CACHE"} ||= ''; 
-
-    my $cache_opt = $options{"${context}_CACHE"};
-    my @cache_opt_args;
-    if (ref $cache_opt) {
-      @cache_opt_args = @$cache_opt;
-      $cache_opt = shift @cache_opt_args;
-    }
+    my $fullopt = $options{"${context}_CACHE"} ||= '';
+    my ($cache_opt, @cache_opt_args) = ref $fullopt ? @$fullopt : $fullopt;
     if ($cache_opt eq 'FAULT') { # no cache
       $caches{$context} = undef;
     } elsif ($cache_opt eq 'HASH') { # user-supplied hash
@@ -149,13 +143,12 @@ sub _my_tie {
   my ($context, $hash, $fullopt) = @_;
 
   # We already checked to make sure that this works.
-  my ($shortopt, @args) = ref $fullopt ? @$fullopt : $fullopt;
+  my ($shortopt, $module, @args) = ref $fullopt ? @$fullopt : $fullopt;
 
   return unless defined $shortopt && $shortopt eq 'TIE';
   carp("TIE option to memoize() is deprecated; use HASH instead")
       if warnings::enabled('all');
 
-  my $module = shift @args;
   if ($context eq 'LIST' && $scalar_only{$module}) {
     croak("You can't use $module for LIST_CACHE because it can only store scalars");
   }
