@@ -151,13 +151,12 @@ sub _wrap {
     };
 
     if (wantarray) {
-      my $cache = $info->{L};
-      _crap_out($name, 'list') unless $cache;
-      if (exists $cache->{$argstr}) {
-        return @{$cache->{$argstr}};
+      _crap_out($name, 'list') unless $cache_L;
+      if (exists $cache_L->{$argstr}) {
+        return @{$cache_L->{$argstr}};
       } else {
         my @q = do { no warnings 'recursion'; &$orig };
-        $cache->{$argstr} = \@q;
+        $cache_L->{$argstr} = \@q;
         @q;
       }
     } else {
