@@ -103,7 +103,7 @@ sub memoize {
     MERGED => $options{MERGED},
   };
 
-  my $wrapper = _wrap($info, \%caches);
+  my $wrapper = _wrap($install_name, $cref, $normalizer, $options{MERGED}, \%caches);
 
   if (defined $install_name) {
     no strict;
@@ -113,7 +113,7 @@ sub memoize {
 
   $memotable{$wrapper} = {
     INFO    => $info,
-    WRAPPER => $wrapper, # cannot be in $info because $wrapper captures $info
+    WRAPPER => $wrapper,
   };
 
   $wrapper			# Return just memoized version
@@ -137,8 +137,7 @@ sub flush_cache {
 }
 
 sub _wrap {
-  my $info = shift;
-  my ($name, $orig, $normalizer, $merged, $caches) = (@$info{qw(NAME U N MERGED)}, shift);
+  my ($name, $orig, $normalizer, $merged, $caches) = @_;
   my ($cache_L, $cache_S) = @$caches{qw(LIST SCALAR)};
   undef $caches; # keep the pad from keeping the hash alive forever
   Scalar::Util::set_prototype(sub {
