@@ -13,7 +13,7 @@ package Memoize;
 our $VERSION = '1.14';
 
 use Carp;
-use Config;                     # Dammit.
+use Scalar::Util 1.11 (); # for set_prototype
 
 BEGIN { require Exporter; *import = \&Exporter::import }
 our @EXPORT = qw(memoize);
@@ -38,19 +38,6 @@ sub memoize {
   my $uppack = caller;		# TCL me Elmo!
   my $name = (ref $fn ? undef : $fn);
   my $cref = _make_cref($fn, $uppack);
-  my $proto = prototype $cref;
-  $proto = defined $proto ? "($proto)" : '';
-
-  # I would like to get rid of the eval, but there seems not to be any
-  # other way to set the prototype properly.  The switch here for
-  # 'usethreads' works around a bug in threadperl having to do with
-  # magic goto.  It would be better to fix the bug and use the magic
-  # goto version everywhere.
-  my $info;
-  my $wrapper = 
-      $Config{usethreads} 
-        ? eval "no warnings 'recursion'; sub $proto { &_memoizer(\$info, \@_); }"
-        : eval "no warnings 'recursion'; sub $proto { unshift \@_, \$info; goto &_memoizer; }";
 
   my $normalizer = $options{NORMALIZER};
   if (defined $normalizer  && ! ref $normalizer) {
@@ -64,9 +51,6 @@ sub memoize {
   if (defined $install_name) {
     $install_name = $uppack . '::' . $install_name
 	unless $install_name =~ /::/;
-    no strict;
-    no warnings 'redefine';
-    *{$install_name} = $wrapper; # Install memoized version
   }
 
   # convert LIST_CACHE => MERGE to SCALAR_CACHE => MERGE
@@ -109,7 +93,7 @@ sub memoize {
     }
   }
 
-  $info =
+  my $info =
   {
     N => $normalizer,
     U => $cref,
@@ -118,6 +102,14 @@ sub memoize {
     L => $caches{LIST},
     MERGED => $options{MERGED},
   };
+
+  my $wrapper = _wrap($info);
+
+  if (defined $install_name) {
+    no strict;
+    no warnings 'redefine';
+    *{$install_name} = $wrapper;
+  }
 
   $memotable{$wrapper} = {
     INFO    => $info,
@@ -144,11 +136,11 @@ sub flush_cache {
   }
 }
 
-# This is the function that manages the memo tables.
-sub _memoizer {
+sub _wrap {
   my $info = shift;
-
   my $normalizer = $info->{N};
+  Scalar::Util::set_prototype(sub {
+
   my $argstr = do {
     no warnings 'uninitialized';
     defined $normalizer
@@ -184,6 +176,8 @@ sub _memoizer {
       $val;
     }
   }
+
+  }, prototype $info->{U});
 }
 
 sub unmemoize {
