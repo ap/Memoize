@@ -199,7 +199,6 @@ sub _memoizer {
   my $context = (wantarray() ? LIST : SCALAR);
 
   if (defined $normalizer) { 
-    no strict;
     if ($context == SCALAR) {
       $argstr = &{$normalizer}(@_);
     } elsif ($context == LIST) {
