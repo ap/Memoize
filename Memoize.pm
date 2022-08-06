@@ -138,7 +138,7 @@ sub flush_cache {
 
 sub _wrap {
   my $info = shift;
-  my ($name, $normalizer) = @$info{qw(NAME N)};
+  my ($name, $orig, $normalizer) = @$info{qw(NAME U N)};
   Scalar::Util::set_prototype(sub {
     my $argstr = do {
       no warnings 'uninitialized';
@@ -154,7 +154,7 @@ sub _wrap {
       if (exists $cache->{$argstr}) {
         return @{$cache->{$argstr}};
       } else {
-        my @q = do { no warnings 'recursion'; &{$info->{U}} };
+        my @q = do { no warnings 'recursion'; &$orig };
         $cache->{$argstr} = \@q;
         @q;
       }
@@ -165,7 +165,7 @@ sub _wrap {
         return $info->{MERGED}
           ? $cache->{$argstr}[0] : $cache->{$argstr};
       } else {
-        my $val = do { no warnings 'recursion'; &{$info->{U}} };
+        my $val = do { no warnings 'recursion'; &$orig };
         # Scalars are considered to be lists; store appropriately
         if ($info->{MERGED}) {
           $cache->{$argstr} = [$val];
@@ -175,7 +175,7 @@ sub _wrap {
         $val;
       }
     }
-  }, prototype $info->{U});
+  }, prototype $orig);
 }
 
 sub unmemoize {
