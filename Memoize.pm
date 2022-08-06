@@ -200,9 +200,9 @@ sub _memoizer {
 
   if (defined $normalizer) { 
     if ($context == SCALAR) {
-      $argstr = &{$normalizer}(@_);
+      $argstr = &{$normalizer};
     } elsif ($context == LIST) {
-      ($argstr) = &{$normalizer}(@_);
+      ($argstr) = &{$normalizer};
     } else {
       croak "Internal error \#41; context was neither LIST nor SCALAR\n";
     }
@@ -219,7 +219,7 @@ sub _memoizer {
       return $info->{MERGED}
         ? $cache->{$argstr}[0] : $cache->{$argstr};
     } else {
-      my $val = &{$info->{U}}(@_);
+      my $val = &{$info->{U}};
       # Scalars are considered to be lists; store appropriately
       if ($info->{MERGED}) {
 	$cache->{$argstr} = [$val];
@@ -234,7 +234,7 @@ sub _memoizer {
     if (exists $cache->{$argstr}) {
       return @{$cache->{$argstr}};
     } else {
-      my @q = &{$info->{U}}(@_);
+      my @q = &{$info->{U}};
       $cache->{$argstr} = \@q;
       @q;
     }
