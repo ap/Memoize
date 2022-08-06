@@ -207,6 +207,7 @@ sub _memoizer {
     } else {
       croak "Internal error \#41; context was neither LIST nor SCALAR\n";
     }
+    $argstr .= ''; # coerce undef to string without triggering a warning
   } else {                      # Default normalizer
     no warnings 'uninitialized';
     $argstr = join chr(28),@_;  
