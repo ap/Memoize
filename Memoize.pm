@@ -160,18 +160,17 @@ sub _wrap {
         @q;
       }
     } else {
-      my $cache = $info->{S};
-      _crap_out($name, 'scalar') unless $cache;
-      if (exists $cache->{$argstr}) { 
+      _crap_out($name, 'scalar') unless $cache_S;
+      if (exists $cache_S->{$argstr}) {
         return $merged
-          ? $cache->{$argstr}[0] : $cache->{$argstr};
+          ? $cache_S->{$argstr}[0] : $cache_S->{$argstr};
       } else {
         my $val = do { no warnings 'recursion'; &$orig };
         # Scalars are considered to be lists; store appropriately
         if ($merged) {
-          $cache->{$argstr} = [$val];
+          $cache_S->{$argstr} = [$val];
         } else {
-          $cache->{$argstr} = $val;
+          $cache_S->{$argstr} = $val;
         }
         $val;
       }
