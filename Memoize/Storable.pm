@@ -3,7 +3,7 @@ use strict; use warnings;
 package Memoize::Storable;
 our $VERSION = '1.10';
 
-use Storable 1.002 ();
+use Storable 1.002 (); # for lock_* function variants
 
 our $Verbose;
 
