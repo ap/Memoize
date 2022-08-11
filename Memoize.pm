@@ -14,7 +14,6 @@ our $VERSION = '1.10';
 
 use Carp;
 use Exporter;
-our $DEBUG;
 use Config;                     # Dammit.
 *import = \&Exporter::import;
 our @EXPORT = qw(memoize);
@@ -269,7 +268,7 @@ sub _make_cref {
     my $parent = (caller(1))[3]; # Function that called _make_cref
     croak "Usage: argument 1 to `$parent' must be a function name or reference.\n";
   }
-  $DEBUG and warn "${name}($fn) => $cref in _make_cref\n";
+  our $DEBUG and warn "${name}($fn) => $cref in _make_cref\n";
   $cref;
 }
 
