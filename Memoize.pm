@@ -13,9 +13,9 @@ package Memoize;
 our $VERSION = '1.10';
 
 use Carp;
-use Exporter;
 use Config;                     # Dammit.
-*import = \&Exporter::import;
+
+BEGIN { require Exporter; *import = \&Exporter::import }
 our @EXPORT = qw(memoize);
 our @EXPORT_OK = qw(unmemoize flush_cache);
 
