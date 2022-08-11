@@ -74,8 +74,7 @@ sub memoize {
   # These will be the caches
   my %caches;
   for my $context (qw(SCALAR LIST)) {
-    # suppress subsequent 'uninitialized value' warnings
-    my $fullopt = $options{"${context}_CACHE"} ||= '';
+    my $fullopt = $options{"${context}_CACHE"} ||= 'MEMORY';
     my ($cache_opt, @cache_opt_args) = ref $fullopt ? @$fullopt : $fullopt;
     if ($cache_opt eq 'FAULT') { # no cache
       $caches{$context} = undef;
@@ -93,7 +92,7 @@ sub memoize {
       require $modulefile;
       tie(%$hash, $module, @cache_opt_args)
         or croak "Couldn't tie memoize hash to `$module': $!";
-    } elsif ($cache_opt eq '' ||  $IS_CACHE_TAG{$cache_opt}) {
+    } elsif ($IS_CACHE_TAG{$cache_opt}) {
       # default is that we make up an in-memory hash
       $caches{$context} = {};
       # (this might get tied later, or MERGEd away)
