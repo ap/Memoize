@@ -1,7 +1,7 @@
 use strict; use warnings;
 use Memoize 0.45 qw(memoize unmemoize);
 use Fcntl;
-use Test::More tests => 47;
+use Test::More tests => 59;
 
 sub list { wantarray ? @_ : $_[-1] }
 
@@ -12,6 +12,21 @@ ok eval { memoize 'ns', SCALAR_CACHE => 'FAULT'; 1 }, 'SCALAR_CACHE => FAULT';
 ok eval { memoize 'na', LIST_CACHE => 'FAULT'; 1 }, 'LIST_CACHE => FAULT';
 is eval { scalar(ns()) }, undef, 'exception in scalar context';
 is eval { list(na()) }, undef, 'exception in list context';
+
+# Test FAULT/FAULT
+sub dummy {1}
+for ([qw(FAULT FAULT)], [qw(FAULT MERGE)], [qw(MERGE FAULT)]) {
+	my ($l_opt, $s_opt) = @$_;
+	my $memodummy = memoize 'dummy', LIST_CACHE => $l_opt, SCALAR_CACHE => $s_opt, INSTALL => undef;
+	my ($ret, $e);
+	{ local $@; $ret = eval { scalar $memodummy->() }; $e = $@ }
+	is $ret, undef, "scalar context fails under $l_opt/$s_opt";
+	like $e, qr/^Anonymous function called in forbidden scalar context/, '... with the right error message';
+	{ local $@; $ret = eval { +($memodummy->())[0] }; $e = $@ }
+	is $ret, undef, "list context fails under $l_opt/$s_opt";
+	like $e, qr/^Anonymous function called in forbidden list context/, '... with the right error message';
+	unmemoize $memodummy;
+}
 
 # Test HASH
 my (%s, %l);
