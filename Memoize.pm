@@ -20,7 +20,6 @@ our @EXPORT = qw(memoize);
 our @EXPORT_OK = qw(unmemoize flush_cache);
 
 my %memotable;
-my @CONTEXT_TAGS = qw(MERGE TIE MEMORY FAULT HASH);
 
 sub CLONE {
   my @info = values %memotable;
@@ -106,7 +105,7 @@ sub memoize {
       $options{MERGED} = 1;
       $caches{SCALAR} = $caches{LIST};
     } else {
-      croak "Unrecognized option to `${context}_CACHE': `$cache_opt' should be one of (@CONTEXT_TAGS)";
+      croak "Unrecognized option to `${context}_CACHE': `$cache_opt' should be one of (MERGE TIE MEMORY FAULT HASH)";
     }
   }
 
