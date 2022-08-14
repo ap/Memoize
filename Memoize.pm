@@ -83,6 +83,16 @@ sub memoize {
       my $cache = $cache_opt_args[0];
       _check_suitable($context, ref tied %$cache);
       $caches{$context} = $cache;
+    } elsif ($cache_opt eq 'TIE') {
+      carp("TIE option to memoize() is deprecated; use HASH instead")
+        if warnings::enabled('all');
+      my $module = shift(@cache_opt_args) || '';
+      _check_suitable($context, $module);
+      my $hash = $caches{$context} = {};
+      (my $modulefile = $module . '.pm') =~ s{::}{/}g;
+      require $modulefile;
+      tie(%$hash, $module, @cache_opt_args)
+        or croak "Couldn't tie memoize hash to `$module': $!";
     } elsif ($cache_opt eq '' ||  $IS_CACHE_TAG{$cache_opt}) {
       # default is that we make up an in-memory hash
       $caches{$context} = {};
@@ -103,15 +113,6 @@ sub memoize {
     $caches{LIST} = $caches{SCALAR};
   }
 
-  # Now deal with the TIE options
-  {
-    my $context;
-    foreach $context (qw(SCALAR LIST)) {
-      # If the relevant option wasn't `TIE', this call does nothing.
-      _my_tie($context, $caches{$context}, $options{"${context}_CACHE"}); # Croaks on failure
-    }
-  }
-
   $info =
   {
     N => $normalizer,
@@ -128,28 +129,6 @@ sub memoize {
   };
 
   $wrapper			# Return just memoized version
-}
-
-# This function tries to load a tied hash class and tie the hash to it.
-sub _my_tie {
-  my ($context, $hash, $fullopt) = @_;
-
-  # We already checked to make sure that this works.
-  my ($shortopt, $module, @args) = ref $fullopt ? @$fullopt : $fullopt;
-
-  return unless defined $shortopt && $shortopt eq 'TIE';
-  carp("TIE option to memoize() is deprecated; use HASH instead")
-      if warnings::enabled('all');
-
-  _check_suitable($context, $module);
-  my $modulefile = $module . '.pm';
-  $modulefile =~ s{::}{/}g;
-  require $modulefile;
-  my $rc = (tie %$hash => $module, @args);
-  unless ($rc) {
-    croak "Couldn't tie memoize hash to `$module': $!";
-  }
-  1;
 }
 
 sub flush_cache {
