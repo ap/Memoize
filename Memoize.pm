@@ -144,23 +144,22 @@ sub _wrap {
 
     if (wantarray) {
       _crap_out($name, 'list') unless $cache_L;
-      if (exists $cache_L->{$argstr}) {
-        return @{$cache_L->{$argstr}};
-      } else {
+      exists $cache_L->{$argstr} ? (
+        @{$cache_L->{$argstr}}
+      ) : do {
         my @q = do { no warnings 'recursion'; &$orig };
         $cache_L->{$argstr} = \@q;
         @q;
-      }
+      };
     } else {
       _crap_out($name, 'scalar') unless $cache_S;
-      if (exists $cache_S->{$argstr}) {
-        return $merged
-          ? $cache_S->{$argstr}[0] : $cache_S->{$argstr};
-      } else {
+      exists $cache_S->{$argstr} ? (
+        $merged ? $cache_S->{$argstr}[0] : $cache_S->{$argstr}
+      ) : do {
         my $val = do { no warnings 'recursion'; &$orig };
         $cache_S->{$argstr} = $merged ? [$val] : $val;
         $val;
-      }
+      };
     }
   }, prototype $orig);
 }
