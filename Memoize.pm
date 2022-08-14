@@ -158,12 +158,7 @@ sub _wrap {
           ? $cache_S->{$argstr}[0] : $cache_S->{$argstr};
       } else {
         my $val = do { no warnings 'recursion'; &$orig };
-        # Scalars are considered to be lists; store appropriately
-        if ($merged) {
-          $cache_S->{$argstr} = [$val];
-        } else {
-          $cache_S->{$argstr} = $val;
-        }
+        $cache_S->{$argstr} = $merged ? [$val] : $val;
         $val;
       }
     }
