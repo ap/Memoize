@@ -28,10 +28,6 @@ sub CLONE {
   %memotable = map +($_->{WRAPPER} => $_), @info;
 }
 
-# Raise an error if the user tries to specify one of thesepackage as a
-# tie for LIST_CACHE
-my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File), map +($_, "Memoize::$_"), qw(AnyDBM_File NDBM_File);
-
 sub memoize {
   my $fn = shift;
   my %options = @_;
@@ -85,10 +81,7 @@ sub memoize {
       $caches{$context} = undef;
     } elsif ($cache_opt eq 'HASH') { # user-supplied hash
       my $cache = $cache_opt_args[0];
-      my $package = ref(tied %$cache);
-      if ($context eq 'LIST' && $scalar_only{$package}) {
-        croak("You can't use $package for LIST_CACHE because it can only store scalars");
-      }
+      _check_suitable($context, ref tied %$cache);
       $caches{$context} = $cache;
     } elsif ($cache_opt eq '' ||  $IS_CACHE_TAG{$cache_opt}) {
       # default is that we make up an in-memory hash
@@ -148,9 +141,7 @@ sub _my_tie {
   carp("TIE option to memoize() is deprecated; use HASH instead")
       if warnings::enabled('all');
 
-  if ($context eq 'LIST' && $scalar_only{$module}) {
-    croak("You can't use $module for LIST_CACHE because it can only store scalars");
-  }
+  _check_suitable($context, $module);
   my $modulefile = $module . '.pm';
   $modulefile =~ s{::}{/}g;
   require $modulefile;
@@ -279,6 +270,15 @@ sub _crap_out {
   } else {
     croak "Anonymous function called in forbidden $context context; faulting";
   }
+}
+
+# Raise an error if the user tries to specify one of these packages as a
+# tie for LIST_CACHE
+my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File), map +($_, "Memoize::$_"), qw(AnyDBM_File NDBM_File);
+sub _check_suitable {
+  my ($context, $package) = @_;
+  croak "You can't use $package for LIST_CACHE because it can only store scalars"
+    if $context eq 'LIST' and $scalar_only{$package};
 }
 
 1;
