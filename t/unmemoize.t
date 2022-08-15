@@ -1,20 +1,19 @@
 use strict; use warnings;
 use Memoize qw(memoize unmemoize);
+use Test::More tests => 7;
 
-print "1..5\n";
-
-eval { unmemoize('f') };	# Should fail
-print (($@ ? '' : 'not '), "ok 1\n");
+is eval { unmemoize('u') }, undef, 'trying to unmemoize without memoizing fails';
+my $errx = qr/^Could not unmemoize function `u', because it was not memoized to begin with/;
+like $@, $errx, '... with the expected error';
 
 sub u {1}
 my $sub = \&u;
 my $wrapped = memoize('u');
-print (($wrapped == \&u) ? "ok 2\n" : "not ok 2\n");
+is \&u, $wrapped, 'trying to memoize succeeds';
 
-eval { unmemoize('u') };	# Should succeed
-print ($@ ? "not ok 3\n" : "ok 3\n");
+is eval { unmemoize('u') }, $sub, 'trying to unmemoize succeeds' or diag $@;
 
-print (($sub == \&u) ? "ok 4\n" : "not ok 4\n");
+is \&u, $sub, '... and does in fact unmemoize it';
 
-eval { unmemoize('u') };	# Should fail
-print ($@ ? "ok 5\n" : "not ok 5\n");
+is eval { unmemoize('u') }, undef, 'trying to unmemoize it again fails';
+like $@, $errx, '... with the expected error';
