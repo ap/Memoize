@@ -16,10 +16,14 @@ sub n {
   $_[0]+1;
 }
 
-eval {require GDBM_File};
-if ($@) {
-  print "1..0 # Skipped: Could not load GDBM_File\n";
-  exit 0;
+sub test_dbm;
+my $module;
+BEGIN {
+  $module = 'GDBM_File';
+  eval "require $module" or do {
+    print "1..0 # Skipped: Could not load $module\n";
+    exit 0;
+  };
 }
 
 print "1..4\n";
@@ -27,14 +31,13 @@ print "1..4\n";
 my $file;
 $file = "md$$";
 1 while unlink $file, "$file.dir", "$file.pag";
-tryout('GDBM_File', $file, 1);  # Test 1..4
+test_dbm $file, GDBM_File::GDBM_NEWDB, 0666;
 1 while unlink $file, "$file.dir", "$file.pag";
 
-sub tryout {
-  my ($tiepack, $file, $testno) = @_;
+sub test_dbm {
+  my $testno = 1;
 
-  tie my %cache => $tiepack, $file, &GDBM_File::GDBM_NEWDB, 0666
-    or die $!;
+  tie my %cache, $module, @_ or die $!;
 
   memoize 'c5', 
   SCALAR_CACHE => [HASH => \%cache],

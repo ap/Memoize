@@ -2,10 +2,14 @@ use strict; use warnings;
 use Memoize 0.52 qw(memoize unmemoize);
 use Fcntl;
 
-eval {require Memoize::AnyDBM_File};
-if ($@) {
-  print "1..0 # Skipped: Could not load Memoize::AnyDBM_File\n";
-  exit 0;
+sub test_dbm;
+my $module;
+BEGIN {
+  $module = 'Memoize::AnyDBM_File';
+  eval "require $module" or do {
+    print "1..0 # Skipped: Could not load $module\n";
+    exit 0;
+  };
 }
 
 print "1..4\n";
@@ -31,17 +35,13 @@ my ($file, @files);
 $file = "md$$";
 @files = ($file, "$file.db", "$file.dir", "$file.pag");
 1 while unlink @files;
-
-
-tryout('Memoize::AnyDBM_File', $file, 1);  # Test 1..4
-# tryout('DB_File', $file, 1);  # Test 1..4
+test_dbm $file, O_RDWR | O_CREAT, 0666;
 1 while unlink $file, "$file.dir", "$file.pag";
 
-sub tryout {
-  my ($tiepack, $file, $testno) = @_;
+sub test_dbm {
+  my $testno = 1;
 
-  tie my %cache => $tiepack, $file, O_RDWR | O_CREAT, 0666
-    or die $!;
+  tie my %cache, $module, @_ or die $!;
 
   memoize 'c5', 
     SCALAR_CACHE => [HASH => \%cache],

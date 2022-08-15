@@ -16,10 +16,14 @@ sub n {
   $_[0]+1;
 }
 
-eval {require Memoize::NDBM_File};
-if ($@) {
-  print "1..0 # Skipped: Could not load Memoize::NDBM_File\n";
-  exit 0;
+sub test_dbm;
+my $module;
+BEGIN {
+  $module = 'Memoize::NDBM_File';
+  eval "require $module" or do {
+    print "1..0 # Skipped: Could not load $module\n";
+    exit 0;
+  };
 }
 
 print "1..4\n";
@@ -27,14 +31,13 @@ print "1..4\n";
 my $file;
 $file = "md$$";
 1 while unlink $file, "$file.dir", "$file.pag", "$file.db";
-tryout('Memoize::NDBM_File', $file, 1);  # Test 1..4
+test_dbm $file, O_RDWR | O_CREAT, 0666;
 1 while unlink $file, "$file.dir", "$file.pag", "$file.db";
 
-sub tryout {
-  my ($tiepack, $file, $testno) = @_;
+sub test_dbm {
+  my $testno = 1;
 
-  tie my %cache => $tiepack, $file, O_RDWR | O_CREAT, 0666
-    or die $!;
+  tie my %cache, $module, @_ or die $!;
 
   memoize 'c5', 
   SCALAR_CACHE => [HASH => \%cache],

@@ -16,10 +16,14 @@ sub n {
   $_[0]+1;
 }
 
-eval {require SDBM_File};
-if ($@) {
-  print "1..0 # Skipped: Could not load SDBM_File\n";
-  exit 0;
+sub test_dbm;
+my $module;
+BEGIN {
+  $module = 'SDBM_File';
+  eval "require $module" or do {
+    print "1..0 # Skipped: Could not load $module\n";
+    exit 0;
+  };
 }
 
 print "1..4\n";
@@ -30,17 +34,16 @@ $file = "md$$";
 if ( $^O eq 'VMS' ) {
     1 while unlink "$file.sdbm_dir";
 }
-tryout('SDBM_File', $file, 1);  # Test 1..4
+test_dbm $file, O_RDWR | O_CREAT, 0666;
 1 while unlink $file, "$file.dir", "$file.pag";
 if ( $^O eq 'VMS' ) {
     1 while unlink "$file.sdbm_dir";
 }
 
-sub tryout {
-  my ($tiepack, $file, $testno) = @_;
+sub test_dbm {
+  my $testno = 1;
 
-  tie my %cache => $tiepack, $file, O_RDWR | O_CREAT, 0666
-    or die $!;
+  tie my %cache, $module, @_ or die $!;
 
   memoize 'c5', 
   SCALAR_CACHE => [HASH => \%cache],

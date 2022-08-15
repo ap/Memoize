@@ -5,10 +5,14 @@ use strict; use warnings;
 use Memoize 0.45 qw(memoize unmemoize);
 # $Memoize::Storable::Verbose = 0;
 
-eval {require Memoize::Storable};
-if ($@) {
-  print "1..0 # Skipped: Could not load Memoize::Storable\n";
-  exit 0;
+sub test_dbm;
+my $module;
+BEGIN {
+  $module = 'Memoize::Storable';
+  eval "require $module" or do {
+    print "1..0 # Skipped: Could not load $module\n";
+    exit 0;
+  };
 }
 
 sub i {
@@ -30,7 +34,7 @@ print "1..5\n";
 my $file;
 $file = "storable$$";
 1 while unlink $file;
-tryout('Memoize::Storable', $file, 1);  # Test 1..4
+test_dbm $file;
 1 while unlink $file;
 
 if (eval { Storable->VERSION('0.609') }) {
@@ -41,11 +45,10 @@ if (eval { Storable->VERSION('0.609') }) {
   print "ok 5 # skip Storable $Storable::VERSION too old for last_op_in_netorder\n";
 }
 
-sub tryout {
-  my ($tiepack, $file, $testno, $option) = @_;
+sub test_dbm {
+  my $testno = 1;
 
-  tie my %cache => $tiepack, $file, $option || ()
-    or die $!;
+  tie my %cache, $module, @_ or die $!;
 
   memoize 'c5', 
   SCALAR_CACHE => [HASH => \%cache],
