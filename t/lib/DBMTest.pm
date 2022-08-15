@@ -14,8 +14,11 @@ my $ARG = 'Keith Bostic is a pinhead';
 sub c5 { 5 }
 sub c23 { 23 }
 
-sub test_dbm {
+sub test_dbm { SKIP: {
 	tie my %cache, $module, @_ or die $!;
+
+	eval { exists $cache{'dummy'}; 1 }
+		or skip join("\n", 'exists() unsupported', errlines), 4;
 
 	memoize 'c5',
 		SCALAR_CACHE => [ HASH => \%cache ],
@@ -32,7 +35,7 @@ sub test_dbm {
 
 	is c23($ARG), 5, '... and find it still there after second memoization';
 	unmemoize 'c23';
-}
+} }
 
 my @file;
 
