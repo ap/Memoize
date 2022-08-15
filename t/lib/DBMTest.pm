@@ -5,6 +5,7 @@ package DBMTest;
 my $module;
 
 use Memoize qw(memoize unmemoize);
+use Test::More;
 
 sub errlines { split /\n/, $@ }
 
@@ -14,19 +15,13 @@ sub c5 { 5 }
 sub c23 { 23 }
 
 sub test_dbm {
-	my $testno = 1;
-
 	tie my %cache, $module, @_ or die $!;
 
 	memoize 'c5',
 		SCALAR_CACHE => [ HASH => \%cache ],
 		LIST_CACHE => 'FAULT';
 
-	my $t1 = c5($ARG);
-	my $t2 = c5($ARG);
-	print (($t1 == 5) ? "ok $testno\n" : "not ok $testno\n");
-	$testno++;
-	print (($t2 == 5) ? "ok $testno\n" : "not ok $testno\n");
+	is c5($ARG), 5, 'store value during first memoization';
 	unmemoize 'c5';
 
 	# Now something tricky---we'll memoize c23 with the wrong table that
@@ -35,12 +30,7 @@ sub test_dbm {
 		SCALAR_CACHE => [ HASH => \%cache ],
 		LIST_CACHE => 'FAULT';
 
-	my $t3 = c23($ARG);
-	my $t4 = c23($ARG);
-	$testno++;
-	print (($t3 == 5) ? "ok $testno\n" : "not ok $testno\n");
-	$testno++;
-	print (($t4 == 5) ? "ok $testno\n" : "not ok $testno\n");
+	is c23($ARG), 5, '... and find it still there after second memoization';
 	unmemoize 'c23';
 }
 
@@ -51,12 +41,9 @@ sub cleanup { 1 while unlink @file }
 sub import {
 	(undef, $module, my %arg) = (shift, @_);
 
-	if (eval "require $module") {
-		printf "1..%d\n", 4 + ($arg{extra_tests}||0);
-	} else {
-		print join("\n# ", "1..0 # Skipped: Could not load $module", errlines), "\n";
-		exit 0;
-	}
+	eval "require $module"
+		? plan tests => 2 + ($arg{extra_tests}||0)
+		: plan skip_all => join "\n# ", "Could not load $module", errlines;
 
 	my ($basename) = map { s/.*:://; s/_file\z//; 'm_'.$_.$$ } lc $module;
 	my $dirfext = $^O eq 'VMS' ? '.sdbm_dir' : '.dir'; # copypaste from DBD::DBM
