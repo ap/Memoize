@@ -1,35 +1,27 @@
 use strict; use warnings;
 use Memoize;
-
-my ($EXPECTED_WARNING, $RES, @q, $r);
-$EXPECTED_WARNING = '(no warning expected)';
-
-print "1..4\n";
+use Test::More tests => 6;
 
 sub q1 ($) { $_[0] + 1 }
 sub q2 ()  { time }
 sub q3     { join "--", @_ }
 
-$SIG{__WARN__} = \&handle_warnings;
+sub no_warnings_ok (&$);
 
-$RES = 'ok';
-memoize 'q1';
-print "$RES 1\n";
+no_warnings_ok { memoize 'q1' } 'no warnings with $ protype';
 
-$RES = 'ok';
-memoize 'q2';
-print "$RES 2\n";
+no_warnings_ok { memoize 'q2' } 'no warnings with empty protype';
 
-$RES = 'ok';
-memoize 'q3';
-print "$RES 3\n";
+no_warnings_ok { memoize 'q3' } 'no warnings without protype';
 
-# Let's see if the prototype is actually honored
-@q = (1..5);
-$r = q1(@q); 
-print (($r == 6) ? '' : 'not ', "ok 4\n");
+is q1(@{['a'..'z']}), 27, '$ prototype is honored';
+is eval('q2("test")'), undef, 'empty prototype is honored';
+like $@, qr/^Too many arguments for main::q2 /, '... with expected parse error';
 
-sub handle_warnings {
-  print $_[0];
-  $RES = 'not ok' unless $_[0] eq $EXPECTED_WARNING;
+sub no_warnings_ok (&$) {
+	my $w;
+	local $SIG{'__WARN__'} = sub { push @$w, @_; &diag };
+	shift->();
+	local $Test::Builder::Level = $Test::Builder::Level + 1;
+	is( $w, undef, shift ) or diag join '', @$w;
 }
