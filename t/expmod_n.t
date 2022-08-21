@@ -1,10 +1,7 @@
 use strict; use warnings;
 use Memoize;
 use Memoize::Expire;
-
-my $n = 0;
-
-print "1..19\n";
+use Test::More tests => 14;
 
 my $RETURN = 1;
 my %CALLS;
@@ -17,33 +14,21 @@ memoize sub { ++$CALLS{$_[0]}; $RETURN },
 
 # $Memoize::Expire::DEBUG = 1;
 
-# 3--6
-for (0,1,2,3) {
-  print "not " unless call($_) == 1;
-  ++$n; print "ok $n\n";
-}
+is call($_), 1, "$_ gets new val" for 0..3;
 
-# 7--10
-for (keys %CALLS) {
-  print "not " unless $CALLS{$_} == (1,1,1,1)[$_];
-  ++$n; print "ok $n\n";
-}
+is_deeply \%CALLS, {0=>1,1=>1,2=>1,3=>1}, 'memoized function called once per argument';
 
-# 11--13
 $RETURN = 2;
-++$n; print ((call(1) == 1 ? '' : 'not '), "ok $n\n"); # 1 expires
-++$n; print ((call(1) == 2 ? '' : 'not '), "ok $n\n"); # 1 gets new val
-++$n; print ((call(2) == 1 ? '' : 'not '), "ok $n\n"); # 2 expires
+is call(1), 1, '1 expires';
+is call(1), 2, '1 gets new val';
+is call(2), 1, '2 expires';
 
-# 14--17
+is_deeply \%CALLS, {0=>1,1=>2,2=>1,3=>1}, 'memoized function called for expired argument';
+
 $RETURN = 3;
-for (0,1,2,3) {
-  # 0 expires, 1 expires, 2 gets new val, 3 expires
-  print "not " unless call($_) == (1,2,3,1)[$_];
-  ++$n; print "ok $n\n";
-}
+is call(0), 1, '0 expires';
+is call(1), 2, '1 expires';
+is call(2), 3, '2 gets new val';
+is call(3), 1, '3 expires';
 
-for (0,1,2,3) {
-  print "not " unless $CALLS{$_} == (1,2,2,1)[$_];
-  ++$n; print "ok $n\n";
-}
+is_deeply \%CALLS, {0=>1,1=>2,2=>2,3=>1}, 'memoized function called for other expired argument';
