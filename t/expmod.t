@@ -1,3 +1,4 @@
+use strict; use warnings;
 use Memoize::Expire;
 use Test::More tests => 8;
 
