@@ -1,7 +1,11 @@
 use strict; use warnings;
 use Memoize;
-use lib 't/lib';
-use ExpireTest;
+
+my %underlying;
+sub ExpireTest::TIEHASH { bless \%underlying, shift }
+sub ExpireTest::EXISTS  { exists $_[0]{$_[1]} }
+sub ExpireTest::FETCH   { $_[0]{$_[1]} }
+sub ExpireTest::STORE   { $_[0]{$_[1]} = $_[2] }
 
 my $n = 0;
 
@@ -39,7 +43,7 @@ for $i (1, 2, 3) {
   print "ok $n\n";
 }
 
-ExpireTest::expire(1);
+delete $underlying{1};
 
 for $i (1, 2, 3) {
   my $v = id($i);
@@ -53,8 +57,7 @@ for $i (1, 2, 3) {
   print "ok $n\n";
 }
 
-ExpireTest::expire(1);
-ExpireTest::expire(2);
+delete @underlying{1,2};
 
 for $i (1, 2, 3) {
   my $v = id($i);
