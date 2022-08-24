@@ -1,6 +1,6 @@
 use strict; use warnings;
 use Memoize;
-use Test::More tests => 15;
+use Test::More tests => 21;
 
 # here we test memoize() itself i.e. whether it sets everything up as requested
 # (except for the (LIST|SCALAR)_CACHE options which are tested elsewhere)
@@ -64,3 +64,8 @@ is $num_args, 23, '... as well as by reference';
 $wrapped = eval { memoize 'dummy_none' };
 is $wrapped, undef, 'memoizing a non-existent function fails';
 like $@, qr/^Cannot operate on nonexistent function `dummy_none'/, '... with the expected error';
+
+for my $nonsub ({}, [], \my $x) {
+	is eval { memoize $nonsub }, undef, "memoizing ${\ref $nonsub} ref fails";
+	like $@, qr/^Usage: memoize 'functionname'\|coderef \{OPTIONS\}/, '... with the expected error';
+}

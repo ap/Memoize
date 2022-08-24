@@ -2,7 +2,7 @@ use strict; use warnings;
 use Memoize 0.45 qw(memoize unmemoize);
 use Fcntl;
 
-print "1..10\n";
+print "1..15\n";
 
 # Test MERGE
 sub xx { wantarray }
@@ -43,3 +43,26 @@ print ((join '', sort keys %l) eq ''   ? "ok 8\n" : "not ok 8\n");
 () = nul('q');
 print ((join '', sort keys %s) eq 'xy' ? "ok 9\n" : "not ok 9\n");
 print ((join '', sort keys %l) eq 'pq' ? "ok 10\n" : "not ok 10\n");
+
+
+# Test errors
+my $n = 10;
+sub like {
+	my ($got, $expected) = @_;
+	print 'not ' x ($got !~ $expected), 'ok ', ++$n, "\n";
+}
+
+my @w;
+eval {
+	local $SIG{'__WARN__'} = sub { push @w, @_ };
+	memoize(sub {}, LIST_CACHE => ['TIE', 'WuggaWugga']);
+};
+like $@, qr/^Can't locate WuggaWugga.pm in \@INC/, '... with the expected error';
+print 'not ' x ($w[0] !~ /^TIE option to memoize\(\) is deprecated; use HASH instead/), 'ok ', ++$n, "\n";
+print 'not ' x (@w != 1), 'ok ', ++$n, "\n";
+
+eval { memoize(sub {}, LIST_CACHE => 'YOB GORGLE') };
+like $@, qr/^Unrecognized option to `LIST_CACHE': `YOB GORGLE'/, '... with the expected error';
+
+eval { memoize(sub {}, SCALAR_CACHE => ['YOB GORGLE']) };
+like $@, qr/^Unrecognized option to `SCALAR_CACHE': `YOB GORGLE'/, '... with the expected error';

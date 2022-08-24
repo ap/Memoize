@@ -2,7 +2,7 @@ use strict; use warnings;
 
 package DBMTest;
 
-my $module;
+my ($module, $is_scalar_only);
 
 use Memoize qw(memoize unmemoize);
 use Test::More;
@@ -16,6 +16,15 @@ sub c23 { 23 }
 
 sub test_dbm { SKIP: {
 	tie my %cache, $module, @_ or die $!;
+
+	my $sub = eval { unmemoize memoize sub {}, LIST_CACHE => [ HASH => \%cache ] };
+	my $errx = qr/^You can't use \Q$module\E for LIST_CACHE because it can only store scalars/;
+	if ($is_scalar_only) {
+		is $sub, undef, "use as LIST_CACHE fails";
+		like $@, $errx, '... with the expected error';
+	} else {
+		ok $sub, "use as LIST_CACHE succeeds";
+	}
 
 	eval { exists $cache{'dummy'}; 1 }
 		or skip join("\n", 'exists() unsupported', errlines), 4;
@@ -44,8 +53,9 @@ sub cleanup { 1 while unlink @file }
 sub import {
 	(undef, $module, my %arg) = (shift, @_);
 
+	$is_scalar_only = $arg{'is_scalar_only'} ? 1 : 0;
 	eval "require $module"
-		? plan tests => 2 + ($arg{extra_tests}||0)
+		? plan tests => 3 + $is_scalar_only + ($arg{extra_tests}||0)
 		: plan skip_all => join "\n# ", "Could not load $module", errlines;
 
 	my ($basename) = map { s/.*:://; s/_file\z//; 'm_'.$_.$$ } lc $module;

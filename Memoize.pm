@@ -30,7 +30,7 @@ sub CLONE {
 
 # Raise an error if the user tries to specify one of thesepackage as a
 # tie for LIST_CACHE
-my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File NDBM_File);
+my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File), map +($_, "Memoize::$_"), qw(AnyDBM_File NDBM_File);
 
 sub memoize {
   my $fn = shift;
