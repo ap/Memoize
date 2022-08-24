@@ -3,20 +3,23 @@ use Memoize;
 use Config;
 
 $|=1;
-print "1..11\n";
+print "1..13\n";
+
+my $n;
+sub like {
+  my ($got, $expected) = @_;
+  print 'not ' x ($got !~ $expected), 'ok ', ++$n, "\n";
+}
 
 eval { memoize({}) };
-print $@ ? "ok 1\n" : "not ok 1 # $@\n";
+like $@, qr/^Usage: memoize 'functionname'\|coderef \{OPTIONS\}/;
 
 eval { memoize([]) };
-print $@ ? "ok 2\n" : "not ok 2 # $@\n";
+like $@, qr/^Usage: memoize 'functionname'\|coderef \{OPTIONS\}/;
 
 eval { my $x; memoize(\$x) };
-print $@ ? "ok 3\n" : "not ok 3 # $@\n";
+like $@, qr/^Usage: memoize 'functionname'\|coderef \{OPTIONS\}/;
 
-# 4--8
-my $n;
-$n = 4;
 my $dummyfile = './dummydb';
 use Fcntl;
 my %args = ( DB_File => [],
@@ -28,30 +31,28 @@ my %args = ( DB_File => [],
 my $mod;
 for $mod (qw(DB_File GDBM_File SDBM_File ODBM_File NDBM_File)) {
   eval { require "$mod.pm" } or do {
+	++$n;
 	print "ok $n # skip Could not load $mod\n";
-	$n++;
 	next;
   };
   eval {
     tie my %cache => $mod, map { (ref($_) eq 'CODE') ? &$_ : $_ } @{$args{$mod}};
     memoize(sub {}, LIST_CACHE => [HASH => \%cache ]);
   };
-  print $@ =~ /can only store scalars/
-    ? "ok $n\n" : "not ok $n # $@\n";
+  like $@, qr/^You can't use \Q$mod\E for LIST_CACHE because it can only store scalars/;
   1 while unlink $dummyfile, "$dummyfile.dir", "$dummyfile.pag", "$dummyfile.db";
-  $n++;
 }
 
-# 9
-eval { no warnings;
+my @w;
+eval { local $SIG{'__WARN__'} = sub { push @w, @_ };
        memoize(sub {}, LIST_CACHE => ['TIE', 'WuggaWugga']) 
      };
-print $@ ? "ok 9\n" : "not ok 9 # $@\n";
+like $@, qr/^Can't locate WuggaWugga.pm in \@INC/, '... with the expected error';
+print 'not ' x ($w[0] !~ /^TIE option to memoize\(\) is deprecated; use HASH instead/), 'ok ', ++$n, "\n";
+print 'not ' x (@w != 1), 'ok ', ++$n, "\n";
 
-# 10
 eval { memoize(sub {}, LIST_CACHE => 'YOB GORGLE') };
-print $@ ? "ok 10\n" : "not ok 10 # $@\n";
+like $@, qr/^Unrecognized option to `LIST_CACHE': `YOB GORGLE'/;
 
-# 11
 eval { memoize(sub {}, SCALAR_CACHE => ['YOB GORGLE']) };
-print $@ ? "ok 11\n" : "not ok 11 # $@\n";
+like $@, qr/^Unrecognized option to `SCALAR_CACHE': `YOB GORGLE'/;
