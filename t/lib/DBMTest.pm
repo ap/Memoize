@@ -44,6 +44,10 @@ sub test_dbm {
 	unmemoize 'c23';
 }
 
+my @file;
+
+sub cleanup { 1 while unlink @file }
+
 sub import {
 	(undef, $module, my %arg) = (shift, @_);
 
@@ -54,9 +58,23 @@ sub import {
 		exit 0;
 	}
 
+	my ($basename) = map { s/.*:://; s/_file\z//; 'm_'.$_.$$ } lc $module;
+	my $dirfext = $^O eq 'VMS' ? '.sdbm_dir' : '.dir'; # copypaste from DBD::DBM
+	@file = map { $_, "$_.db", "$_.pag", $_.$dirfext } $basename;
+	cleanup;
+
 	my $pkg = caller;
 	no strict 'refs';
-	*{$pkg.'::'.$_} = \&$_ for 'test_dbm';
+	*{$pkg.'::'.$_} = \&$_ for qw(test_dbm cleanup);
+	*{$pkg.'::file'} = \$basename;
+}
+
+END {
+	cleanup;
+	if (my @failed = grep -e, @file) {
+		@failed = grep !unlink, @failed; # to set $!
+		warn "Can't unlink @failed! ($!)\n" if @failed;
+	}
 }
 
 1;
