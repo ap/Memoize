@@ -2,45 +2,31 @@ use strict; use warnings;
 use Memoize qw(memoize unmemoize);
 use Test::More;
 
-sub reff {
-  return [1,2,3];
-
-}
-
-sub listf {
-  return (1,2,3);
-}
-
-sub f17 { return 17 }
-
 plan tests => 7;
+
+sub reff { [1,2,3] }
+sub listf { (1,2,3) }
 
 memoize 'reff', LIST_CACHE => 'MERGE';
 memoize 'listf';
 
-my ($s, @a);
-$s = reff();
-@a = reff();
-is(scalar(@a), 1, "reff list context");
+scalar reff();
+is_deeply [reff()], [[1,2,3]], 'reff list context after scalar context';
 
-$s = listf();
-@a = listf();
-is(scalar(@a), 3, "listf list context");
+scalar listf();
+is_deeply [listf()], [1,2,3], 'listf list context after scalar context';
 
 unmemoize 'reff';
 memoize 'reff', LIST_CACHE => 'MERGE';
 unmemoize 'listf';
 memoize 'listf';
 
-@a = reff();
-$s = reff();
-is(scalar @a, 1, "reff list context");
+is_deeply [reff()], [[1,2,3]], 'reff list context';
 
-@a = listf();
-$s = listf();
-is(scalar @a, 3, "listf list context");
+is_deeply [listf()], [1,2,3], 'listf list context';
 
+sub f17 { return 17 }
 memoize 'f17', SCALAR_CACHE => 'MERGE';
-is(f17(), 17, "f17 first call");
-is(f17(), 17, "f17 second call");
-is(scalar(f17()), 17, "f17 scalar context call");
+is_deeply [f17()], [17], 'f17 first call';
+is_deeply [f17()], [17], 'f17 second call';
+is scalar(f17()), 17, 'f17 scalar context call';
