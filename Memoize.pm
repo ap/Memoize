@@ -325,6 +325,8 @@ If you call the function again with the same arguments, C<memoize>
 jumps in and gives you the value out of the table, instead of letting
 the function compute the value all over again.
 
+=head1 EXAMPLE
+
 Here is an extreme example.  Consider the Fibonacci sequence, defined
 by the following function:
 
@@ -952,9 +954,7 @@ C<f()> (C<f> called with no arguments) will not be memoized.  If this
 is a big problem, you can supply a normalizer function that prepends
 C<"x"> to every key.
 
-=head1 AUTHOR
-
-Mark-Jason Dominus
+=head1 SEE ALSO
 
 At
 L<https://perl.plover.com/MiniMemoize/> there is an article about
@@ -962,17 +962,11 @@ memoization and about the internals of Memoize that appeared in The
 Perl Journal, issue #13.  (This article is also included in the
 Memoize distribution as F<article.html>.)
 
-The author's book I<Higher-Order Perl> (2005, ISBN 1558607013, published
+Mark-Jason Dominus's book I<Higher-Order Perl> (2005, ISBN 1558607013,
+published
 by Morgan Kaufmann) discusses memoization (and many other 
 topics) in tremendous detail. It is available on-line for free.
 For more information, visit L<https://hop.perl.plover.com/>.
-
-=head1 COPYRIGHT AND LICENSE
-
-Copyright 1998, 1999, 2000, 2001, 2012  by Mark Jason Dominus
-
-This library is free software; you may redistribute it and/or modify
-it under the same terms as Perl itself.
 
 =head1 THANK YOU
 
