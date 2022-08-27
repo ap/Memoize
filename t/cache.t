@@ -5,9 +5,7 @@ use Fcntl;
 print "1..10\n";
 
 # Test MERGE
-sub xx {
-  wantarray();
-}
+sub xx { wantarray }
 
 my $s = xx();
 print ((!$s) ? "ok 1\n" : "not ok 1\n");
