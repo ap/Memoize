@@ -26,6 +26,14 @@ sub test_dbm { SKIP: {
 		ok $sub, "use as LIST_CACHE succeeds";
 	}
 
+	$sub = eval { no warnings; unmemoize memoize sub {}, LIST_CACHE => [ TIE => $module, @_ ] };
+	if ($is_scalar_only) {
+		is $sub, undef, '... including under the TIE option';
+		like $@, $errx, '... with the expected error';
+	} else {
+		ok $sub, 'use as LIST_CACHE succeeds';
+	}
+
 	eval { exists $cache{'dummy'}; 1 }
 		or skip join("\n", 'exists() unsupported', errlines), 4;
 
@@ -44,6 +52,16 @@ sub test_dbm { SKIP: {
 
 	is c23($ARG), 5, '... and find it still there after second memoization';
 	unmemoize 'c23';
+
+	untie %cache;
+
+	{ no warnings; memoize 'c23',
+		SCALAR_CACHE => [ TIE => $module, @_ ],
+		LIST_CACHE => 'FAULT';
+	}
+
+	is c23($ARG), 5, '... as well as a third memoization via TIE';
+	unmemoize 'c23';
 } }
 
 my @file;
@@ -53,9 +71,9 @@ sub cleanup { 1 while unlink @file }
 sub import {
 	(undef, $module, my %arg) = (shift, @_);
 
-	$is_scalar_only = $arg{'is_scalar_only'} ? 1 : 0;
+	$is_scalar_only = $arg{'is_scalar_only'} ? 2 : 0;
 	eval "require $module"
-		? plan tests => 3 + $is_scalar_only + ($arg{extra_tests}||0)
+		? plan tests => 5 + $is_scalar_only + ($arg{extra_tests}||0)
 		: plan skip_all => join "\n# ", "Could not load $module", errlines;
 
 	my ($basename) = map { s/.*:://; s/_file\z//; 'm_'.$_.$$ } lc $module;
