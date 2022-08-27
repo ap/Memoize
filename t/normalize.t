@@ -1,7 +1,7 @@
 use strict; use warnings;
 use Memoize;
 
-print "1..8\n";
+print "1..10\n";
 
 sub n_null { '' }
 
@@ -58,3 +58,15 @@ sub count_uninitialized { $COUNT += join('', @_) =~ /\AUse of uninitialized valu
 my $war1 = memoize(sub {1}, NORMALIZER => sub {undef});
 { local $SIG{__WARN__} = \&count_uninitialized; $war1->() }
 print (( ($COUNT == 0) ? '' : 'not '), "ok 8\n");
+
+my $test = 8;
+
+# Context propagated correctly to normalizer?
+sub n {
+  my $which = wantarray ? 'list' : 'scalar';
+  print 'not ' x ($_[0] ne $which), 'ok ', ++$test, "\n";
+}
+sub f { 1 }
+memoize('f', NORMALIZER => 'n');
+my $s = f 'scalar';
+my @a = f 'list';

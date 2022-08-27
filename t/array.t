@@ -1,7 +1,7 @@
 use strict; use warnings;
 use Memoize;
 
-print "1..11\n";
+print "1..9\n";
 
 my $timestamp;
 sub timelist {
@@ -48,21 +48,3 @@ print ((($s == $a[0]) ? 'not ' : ''), "ok 7\n");
 # Context propagated correctly?
 print ((($s eq '') ? '' : 'not '), "ok 8\n"); # Scalar context
 print ((("@a" eq '1' && @a == 1) ? '' : 'not '), "ok 9\n"); # List context
-
-# Context propagated correctly to normalizer?
-sub n {
-  my $arg = shift;
-  my $test = shift;
-  if (wantarray) {
-	sub ARRAY () { 'ARRAY' } # FIXME temporary strict-cleanliness shim
-    print ((($arg eq ARRAY) ? '' : 'not '), "ok $test\n"); # List context
-  } else {
-	sub SCALAR () { 'SCALAR' } # FIXME temporary strict-cleanliness shim
-    print ((($arg eq SCALAR) ? '' : 'not '), "ok $test\n"); # Scalar context
-  }
-}
-
-sub f { 1 }
-memoize('f', NORMALIZER => 'n');
-$s = f('SCALAR', 10);		# Test 10
-@a = f('ARRAY' , 11);		# Test 11
