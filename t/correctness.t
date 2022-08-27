@@ -1,38 +1,33 @@
 use strict; use warnings;
 use Memoize;
+use Test::More tests => 4;
 
 # here we test whether memoization actually has the desired effect
 
-print "1..6\n";
-
-print "# Fibonacci\n";
-
-sub mt1 {			# Fibonacci
-  my $n = shift;
-  return $n if $n < 2;
-  mt1($n-1) + mt2($n-2);
-}
-sub mt2 {		
-  my $n = shift;
-  return $n if $n < 2;
-  mt1($n-1) + mt2($n-2);
+my ($fib, $ns1_calls, $ns2_calls, $total_calls) = ([0,1], 1, 1, 1+1);
+while (@$fib < 23) {
+	push @$fib, $$fib[-1] + $$fib[-2];
+	my $n_calls = 1 + $ns1_calls + $ns2_calls;
+	$total_calls += $n_calls;
+	($ns2_calls, $ns1_calls) = ($ns1_calls, $n_calls);
 }
 
-my (@f1, @f2, @f3, @f4, $n, $i, $j, $k, @arrays);
-@f1 = map { mt1($_) } (0 .. 15);
-@f2 = map { mt2($_) } (0 .. 15);
-memoize('mt1');
-@f3 = map { mt1($_) } (0 .. 15);
-@f4 = map { mt1($_) } (0 .. 15);
-@arrays = (\@f1, \@f2, \@f3, \@f4); 
-for ($i=0; $i<3; $i++) {
-  for ($j=$i+1; $j<3; $j++) {
-    $n++;
-    print ((@{$arrays[$i]} == @{$arrays[$j]}) ? "ok $n\n" : "not ok $n\n");
-    $n++;
-    for ($k=0; $k < @{$arrays[$i]}; $k++) {
-      (print "not ok $n\n", next)  if $arrays[$i][$k] != $arrays[$j][$k];
-    }
-    print "ok $n\n";
-  }
+my $num_calls;
+sub fib {
+	++$num_calls;
+	my $n = shift;
+	return $n if $n < 2;
+	fib($n-1) + fib($n-2);
 }
+
+my @s1 = map 0+fib($_), 0 .. $#$fib;
+is_deeply \@s1, $fib, 'unmemoized Fibonacci works';
+is $num_calls, $total_calls, '... with the expected amount of calls';
+
+undef $num_calls;
+memoize 'fib';
+
+my @f1 = map 0+fib($_), 0 .. $#$fib;
+my @f2 = map 0+fib($_), 0 .. $#$fib;
+is_deeply \@f1, $fib, 'memoized Fibonacci works';
+is $num_calls, @$fib, '... with a minimal amount of calls';
