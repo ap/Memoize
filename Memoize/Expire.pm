@@ -239,7 +239,7 @@ the cache, and it should return the cache object to the caller.
 For example, MyExpirePolicy::TIEHASH might create an object that
 contains a regular Perl hash (which it will to store the cached
 values) and some extra information about the arguments and how old the
-data is and things like that.  Let us call this object `C'.
+data is and things like that. Let us call this object I<C<C>>.
 
 When Memoize needs to check to see if an entry is in the cache
 already, it will invoke C<< C->EXISTS(key) >>.  C<key> is the normalized
@@ -272,7 +272,7 @@ cache item after ten seconds.
               $cache->{$key}{EXPIRE_TIME} > time) {
 	    return 1
 	  } else {
-	    return 0;  # Do NOT return `undef' here.
+	    return 0;  # Do NOT return undef here
 	  }
 	}
 

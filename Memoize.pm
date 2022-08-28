@@ -319,7 +319,7 @@ Options include:
 
 =head1 DESCRIPTION
 
-`Memoizing' a function makes it faster by trading space for time.  It
+I<Memoizing> a function makes it faster by trading space for time. It
 does this by caching the return values of the function in a table.
 If you call the function again with the same arguments, C<memoize>
 jumps in and gives you the value out of the table, instead of letting
@@ -347,14 +347,14 @@ run---fib(14) makes 1,200 extra recursive calls to itself, to compute
 and recompute things that it already computed.
 
 This function is a good candidate for memoization.  If you memoize the
-`fib' function above, it will compute fib(14) exactly once, the first
+C<fib> function above, it will compute fib(14) exactly once, the first
 time it needs to, and then save the result in a table.  Then if you
 ask for fib(14) again, it gives you the result out of the table.
 While computing fib(14), instead of computing fib(12) twice, it does
 it once; the second time it needs the value it gets it from the table.
 It doesn't compute fib(11) four times; it computes it once, getting it
 from the table the next three times.  Instead of making 1,200
-recursive calls to `fib', it makes 15.  This makes the function about
+recursive calls to C<fib>, it makes 15. This makes the function about
 150 times faster.
 
 You could do the memoization yourself, by rewriting the function, like
@@ -381,8 +381,8 @@ This makes it easy to turn memoizing on and off.
 
 Here's an even simpler example: I wrote a simple ray tracer; the
 program would look in a certain direction, figure out what it was
-looking at, and then convert the `color' value (typically a string
-like `red') of that object to a red, green, and blue pixel value, like
+looking at, and then convert the C<color> value (typically a string
+like C<red>) of that object to a red, green, and blue pixel value, like
 this:
 
     for ($direction = 0; $direction < 300; $direction++) {
@@ -920,8 +920,8 @@ function (or when your program exits):
         tie my %cache => 'Memoize::Storable', $filename, 'nstore';
 	memoize 'function', SCALAR_CACHE => [HASH => \%cache];
 
-Include the `nstore' option to have the C<Storable> database written
-in `network order'.  (See L<Storable> for more details about this.)
+Include the C<nstore> option to have the C<Storable> database written
+in I<network order>. (See L<Storable> for more details about this.)
 
 The C<flush_cache()> function will raise a run-time error unless the
 tied package provides a C<CLEAR> method.
@@ -960,7 +960,7 @@ At
 http://perl.plover.com/MiniMemoize/ there is an article about
 memoization and about the internals of Memoize that appeared in The
 Perl Journal, issue #13.  (This article is also included in the
-Memoize distribution as `article.html'.)
+Memoize distribution as F<article.html>.)
 
 The author's book I<Higher-Order Perl> (2005, ISBN 1558607013, published
 by Morgan Kaufmann) discusses memoization (and many other 
