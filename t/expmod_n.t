@@ -1,11 +1,10 @@
 use strict; use warnings;
 use Memoize;
+use Memoize::Expire;
 
 my $n = 0;
 
-print "1..22\n";
-
-++$n; print "ok $n\n";
+print "1..19\n";
 
 my ($RETURN, %CALLS);
 $RETURN = 1;
@@ -16,16 +15,12 @@ sub call {
   $RETURN;
 }
 
-require Memoize::Expire;
-++$n; print "ok $n\n";
-
 tie my %cache => 'Memoize::Expire', NUM_USES => 2;
 memoize 'call',
     SCALAR_CACHE => [HASH => \%cache],
     LIST_CACHE => 'FAULT';
 
 # $Memoize::Expire::DEBUG = 1;
-++$n; print "ok $n\n";
 
 # 3--6
 for (0,1,2,3) {
