@@ -957,7 +957,7 @@ C<"x"> to every key.
 Mark-Jason Dominus
 
 At
-http://perl.plover.com/MiniMemoize/ there is an article about
+L<https://perl.plover.com/MiniMemoize/> there is an article about
 memoization and about the internals of Memoize that appeared in The
 Perl Journal, issue #13.  (This article is also included in the
 Memoize distribution as F<article.html>.)
@@ -965,7 +965,7 @@ Memoize distribution as F<article.html>.)
 The author's book I<Higher-Order Perl> (2005, ISBN 1558607013, published
 by Morgan Kaufmann) discusses memoization (and many other 
 topics) in tremendous detail. It is available on-line for free.
-For more information, visit http://hop.perl.plover.com/ .
+For more information, visit L<https://hop.perl.plover.com/>.
 
 =head1 COPYRIGHT AND LICENSE
 
