@@ -21,7 +21,6 @@ our @EXPORT_OK = qw(unmemoize flush_cache);
 
 my %memotable;
 my @CONTEXT_TAGS = qw(MERGE TIE MEMORY FAULT HASH);
-my %IS_CACHE_TAG = map {($_ => 1)} @CONTEXT_TAGS;
 
 sub CLONE {
   my @info = values %memotable;
@@ -71,9 +70,16 @@ sub memoize {
     *{$install_name} = $wrapper; # Install memoized version
   }
 
+  # convert LIST_CACHE => MERGE to SCALAR_CACHE => MERGE
+  # to ensure TIE/HASH will always be checked by _check_suitable
+  if (($options{LIST_CACHE} || '') eq 'MERGE') {
+    $options{LIST_CACHE} = $options{SCALAR_CACHE};
+    $options{SCALAR_CACHE} = 'MERGE';
+  }
+
   # These will be the caches
   my %caches;
-  for my $context (qw(SCALAR LIST)) {
+  for my $context (qw(LIST SCALAR)) { # SCALAR_CACHE must be last, to process MERGE
     my $fullopt = $options{"${context}_CACHE"} ||= 'MEMORY';
     my ($cache_opt, @cache_opt_args) = ref $fullopt ? @$fullopt : $fullopt;
     if ($cache_opt eq 'FAULT') { # no cache
@@ -92,24 +98,16 @@ sub memoize {
       require $modulefile;
       tie(%$hash, $module, @cache_opt_args)
         or croak "Couldn't tie memoize hash to `$module': $!";
-    } elsif ($IS_CACHE_TAG{$cache_opt}) {
-      # default is that we make up an in-memory hash
+    } elsif ($cache_opt eq 'MEMORY') {
       $caches{$context} = {};
-      # (this might get tied later, or MERGEd away)
+    } elsif ($cache_opt eq 'MERGE' and not ref $fullopt) { # ['MERGE'] was never supported
+      die "cannot MERGE $context\_CACHE" if $context ne 'SCALAR'; # should never happen
+      die 'bad cache setup order' if not exists $caches{LIST}; # should never happen
+      $options{MERGED} = 1;
+      $caches{SCALAR} = $caches{LIST};
     } else {
       croak "Unrecognized option to `${context}_CACHE': `$cache_opt' should be one of (@CONTEXT_TAGS)";
     }
-  }
-
-  # Perhaps I should check here that you didn't supply *both* merge
-  # options.  But if you did, it does do something reasonable: They
-  # both get merged to the same in-memory hash.
-  if ($options{SCALAR_CACHE} eq 'MERGE') {
-    $options{MERGED} = 1;
-    $caches{SCALAR} = $caches{LIST};
-  } elsif ($options{LIST_CACHE} eq 'MERGE') {
-    $options{MERGED} = 1;
-    $caches{LIST} = $caches{SCALAR};
   }
 
   $info =
