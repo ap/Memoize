@@ -18,17 +18,11 @@ print "# This will take about thirty seconds.\n";
 
 print "1..24\n";
 
-sub now {
-#  print "NOW: @_ ", time(), "\n";
-  time;
-}
-
 tie my %cache => 'Memoize::Expire', LIFETIME => $LIFETIME;
-
-memoize 'now',
-    SCALAR_CACHE => [HASH => \%cache ],
-    LIST_CACHE => 'FAULT'
-    ;
+memoize sub { time },
+    SCALAR_CACHE => [ HASH => \%cache ],
+    LIST_CACHE => 'FAULT',
+    INSTALL => 'now';
 
 my (@before, @after, @now);
 

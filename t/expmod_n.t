@@ -6,19 +6,14 @@ my $n = 0;
 
 print "1..19\n";
 
-my ($RETURN, %CALLS);
-$RETURN = 1;
-%CALLS = ();
-sub call {
-#  print "CALL $_[0] => $RETURN\n";
-  ++$CALLS{$_[0]};
-  $RETURN;
-}
+my $RETURN = 1;
+my %CALLS;
 
 tie my %cache => 'Memoize::Expire', NUM_USES => 2;
-memoize 'call',
-    SCALAR_CACHE => [HASH => \%cache],
-    LIST_CACHE => 'FAULT';
+memoize sub { ++$CALLS{$_[0]}; $RETURN },
+    SCALAR_CACHE => [ HASH => \%cache ],
+    LIST_CACHE => 'FAULT',
+    INSTALL => 'call';
 
 # $Memoize::Expire::DEBUG = 1;
 
