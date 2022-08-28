@@ -69,6 +69,11 @@ Release history for Memoize
   * Memoize::Saves, an experimental example module previously included in this
     distribution, has been removed and put into its own distribution on CPAN.
 
+1.01  Fri 12 Jul 2002
+  * Support for pre-5.6 perls (use of warnings pragma from 1.00 reverted)
+  * Better temporary file cleanup in t/errors.t
+  * Memoize::Expire test fixes
+
 1.00  Fri 29 Mar 2002
   * Minor documentation and test changes only.
 
@@ -111,6 +116,22 @@ Release history for Memoize
   * Long-standing LIST_CACHE bug cleared up---it turns out that there
     never was a bug. I put in tests for it anyway.
   * Manual increased.
+
+0.62  Tue 24 Oct 2000
+  * No functional changes
+  * No more Memoize version check in ExpireFile test
+
+0.61  Tue 24 Oct 2000
+  * Tests for flush_cache()
+
+0.60  Mon 23 Oct 2000
+  * New Memoize::ExpireFile cache policy module
+  * flush_cache()
+  * [Various internal changes? --Ed.]
+
+0.52  Mon 20 Sep 1999
+  * New Memoize::Saves cache policy module which allows specifying that
+    certain function values whould always be looked up afresh
 
 0.51  Sat 18 Sep 1999
   * Just a maintenance release. I made the tests a little more robust, and
@@ -160,6 +181,10 @@ Release history for Memoize
     suggesting this. If you want to store list values in a persistent
     cache, try Memoize::Storable.
 
+0.48  Fri 15 Jan 1999
+  * Support for prototypes on memoized subs
+  * Attempt at a fix of wrapper bug under threaded perls
+
 0.47  Tue 15 Sep 1998
   * Caching of function return values into NDBM files is now supported.
     You can cache function return values into Memoize::AnyDBM files, which
@@ -198,3 +223,19 @@ Release history for Memoize
   * Return value from unmemoize() is now the resulting unmemoized
     function, instead of the constant 1. It was already docmuented
     to do so.
+
+0.05  Thu 19 Feb 1998
+  * No changes
+
+0.04  Thu 19 Feb 1998
+  * INSTALL option to control name under which memoized sub is installed
+  * unmemoize function
+  * More documentation
+
+0.03  Thu 05 Feb 1998
+  * No sub redefinition warning when memoizing a named sub
+  * No undefined warning when normalizer returns undef
+  * A basic test suite
+
+0.02  Wed 04 Feb 1998
+  * Initial release
