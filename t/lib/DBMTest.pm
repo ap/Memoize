@@ -44,6 +44,10 @@ sub test_dbm { SKIP: {
 	is c5($ARG), 5, 'store value during first memoization';
 	unmemoize 'c5';
 
+	untie %cache;
+
+	tie my %cache, $module, @_ or die $!;
+
 	# Now something tricky---we'll memoize c23 with the wrong table that
 	# has the 5 already cached.
 	memoize 'c23',
