@@ -35,7 +35,7 @@ sub test_dbm { SKIP: {
 	}
 
 	eval { exists $cache{'dummy'}; 1 }
-		or skip join("\n", 'exists() unsupported', errlines), 4;
+		or skip join("\n", 'exists() unsupported', errlines), 3;
 
 	memoize 'c5',
 		SCALAR_CACHE => [ HASH => \%cache ],
