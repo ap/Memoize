@@ -9,6 +9,8 @@
 
 use strict; use warnings;
 
+no warnings 'recursion';
+
 package Memoize;
 our $VERSION = '1.13';
 
