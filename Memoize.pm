@@ -20,17 +20,11 @@ our @EXPORT = qw(memoize);
 our @EXPORT_OK = qw(unmemoize flush_cache);
 
 my %memotable;
-my @CONTEXT_TAGS = qw(MERGE TIE MEMORY FAULT HASH);
-my %IS_CACHE_TAG = map {($_ => 1)} @CONTEXT_TAGS;
 
 sub CLONE {
   my @info = values %memotable;
   %memotable = map +($_->{WRAPPER} => $_), @info;
 }
-
-# Raise an error if the user tries to specify one of thesepackage as a
-# tie for LIST_CACHE
-my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File), map +($_, "Memoize::$_"), qw(AnyDBM_File NDBM_File);
 
 sub memoize {
   my $fn = shift;
@@ -75,47 +69,43 @@ sub memoize {
     *{$install_name} = $wrapper; # Install memoized version
   }
 
+  # convert LIST_CACHE => MERGE to SCALAR_CACHE => MERGE
+  # to ensure TIE/HASH will always be checked by _check_suitable
+  if (($options{LIST_CACHE} || '') eq 'MERGE') {
+    $options{LIST_CACHE} = $options{SCALAR_CACHE};
+    $options{SCALAR_CACHE} = 'MERGE';
+  }
+
   # These will be the caches
   my %caches;
-  for my $context (qw(SCALAR LIST)) {
-    # suppress subsequent 'uninitialized value' warnings
-    my $fullopt = $options{"${context}_CACHE"} ||= '';
+  for my $context (qw(LIST SCALAR)) { # SCALAR_CACHE must be last, to process MERGE
+    my $fullopt = $options{"${context}_CACHE"} ||= 'MEMORY';
     my ($cache_opt, @cache_opt_args) = ref $fullopt ? @$fullopt : $fullopt;
     if ($cache_opt eq 'FAULT') { # no cache
       $caches{$context} = undef;
     } elsif ($cache_opt eq 'HASH') { # user-supplied hash
       my $cache = $cache_opt_args[0];
-      my $package = ref(tied %$cache);
-      if ($context eq 'LIST' && $scalar_only{$package}) {
-        croak("You can't use $package for LIST_CACHE because it can only store scalars");
-      }
+      _check_suitable($context, ref tied %$cache);
       $caches{$context} = $cache;
-    } elsif ($cache_opt eq '' ||  $IS_CACHE_TAG{$cache_opt}) {
-      # default is that we make up an in-memory hash
+    } elsif ($cache_opt eq 'TIE') {
+      carp("TIE option to memoize() is deprecated; use HASH instead")
+        if warnings::enabled('all');
+      my $module = shift(@cache_opt_args) || '';
+      _check_suitable($context, $module);
+      my $hash = $caches{$context} = {};
+      (my $modulefile = $module . '.pm') =~ s{::}{/}g;
+      require $modulefile;
+      tie(%$hash, $module, @cache_opt_args)
+        or croak "Couldn't tie memoize hash to `$module': $!";
+    } elsif ($cache_opt eq 'MEMORY') {
       $caches{$context} = {};
-      # (this might get tied later, or MERGEd away)
+    } elsif ($cache_opt eq 'MERGE' and not ref $fullopt) { # ['MERGE'] was never supported
+      die "cannot MERGE $context\_CACHE" if $context ne 'SCALAR'; # should never happen
+      die 'bad cache setup order' if not exists $caches{LIST}; # should never happen
+      $options{MERGED} = 1;
+      $caches{SCALAR} = $caches{LIST};
     } else {
-      croak "Unrecognized option to `${context}_CACHE': `$cache_opt' should be one of (@CONTEXT_TAGS)";
-    }
-  }
-
-  # Perhaps I should check here that you didn't supply *both* merge
-  # options.  But if you did, it does do something reasonable: They
-  # both get merged to the same in-memory hash.
-  if ($options{SCALAR_CACHE} eq 'MERGE') {
-    $options{MERGED} = 1;
-    $caches{SCALAR} = $caches{LIST};
-  } elsif ($options{LIST_CACHE} eq 'MERGE') {
-    $options{MERGED} = 1;
-    $caches{LIST} = $caches{SCALAR};
-  }
-
-  # Now deal with the TIE options
-  {
-    my $context;
-    foreach $context (qw(SCALAR LIST)) {
-      # If the relevant option wasn't `TIE', this call does nothing.
-      _my_tie($context, $caches{$context}, $options{"${context}_CACHE"}); # Croaks on failure
+      croak "Unrecognized option to `${context}_CACHE': `$cache_opt' should be one of (MERGE TIE MEMORY FAULT HASH)";
     }
   }
 
@@ -135,30 +125,6 @@ sub memoize {
   };
 
   $wrapper			# Return just memoized version
-}
-
-# This function tries to load a tied hash class and tie the hash to it.
-sub _my_tie {
-  my ($context, $hash, $fullopt) = @_;
-
-  # We already checked to make sure that this works.
-  my ($shortopt, $module, @args) = ref $fullopt ? @$fullopt : $fullopt;
-
-  return unless defined $shortopt && $shortopt eq 'TIE';
-  carp("TIE option to memoize() is deprecated; use HASH instead")
-      if warnings::enabled('all');
-
-  if ($context eq 'LIST' && $scalar_only{$module}) {
-    croak("You can't use $module for LIST_CACHE because it can only store scalars");
-  }
-  my $modulefile = $module . '.pm';
-  $modulefile =~ s{::}{/}g;
-  require $modulefile;
-  my $rc = (tie %$hash => $module, @args);
-  unless ($rc) {
-    croak "Couldn't tie memoize hash to `$module': $!";
-  }
-  1;
 }
 
 sub flush_cache {
@@ -279,6 +245,15 @@ sub _crap_out {
   } else {
     croak "Anonymous function called in forbidden $context context; faulting";
   }
+}
+
+# Raise an error if the user tries to specify one of these packages as a
+# tie for LIST_CACHE
+my %scalar_only = map {($_ => 1)} qw(DB_File GDBM_File SDBM_File ODBM_File), map +($_, "Memoize::$_"), qw(AnyDBM_File NDBM_File);
+sub _check_suitable {
+  my ($context, $package) = @_;
+  croak "You can't use $package for LIST_CACHE because it can only store scalars"
+    if $context eq 'LIST' and $scalar_only{$package};
 }
 
 1;
