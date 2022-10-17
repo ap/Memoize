@@ -1,0 +1,86 @@
+name: make test
+
+on:
+  - push
+  - pull_request
+  - workflow_dispatch
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ ubuntu-latest, macos-latest, windows-latest ]
+        perl: [ '5.6.2', '5.8.0', '5.8.1', '5.8.5', '5.8.8', '5.10.0', '5.10.1', '5.12', '5.14', '5.16', '5.18', '5.20', '5.22', '5.24', '5.26', '5.28', '5.30', '5.32', '5.34', '5.36' ]
+        multi-thread: [ true, false ]
+        exclude:
+          - runner: windows-latest
+            perl: '5.36'
+          - runner: windows-latest
+            perl: '5.34'
+          - runner: windows-latest
+            perl: '5.24'
+          - runner: windows-latest
+            perl: '5.22'
+          - runner: windows-latest
+            perl: '5.20'
+          - runner: windows-latest
+            perl: '5.18'
+          - runner: windows-latest
+            perl: '5.16'
+          - runner: windows-latest
+            perl: '5.14'
+          - runner: windows-latest
+            perl: '5.12'
+          - runner: windows-latest
+            perl: '5.10.1'
+          - runner: windows-latest
+            perl: '5.10.0'
+          - runner: windows-latest
+            perl: '5.8.8'
+          - runner: windows-latest
+            perl: '5.8.5'
+          - runner: windows-latest
+            perl: '5.8.1'
+          - runner: windows-latest
+            perl: '5.8.0'
+          - runner: windows-latest
+            perl: '5.6.2'
+
+    runs-on: ${{matrix.runner}}
+    name: OS ${{matrix.runner}} Perl ${{matrix.perl}} ${{ ( matrix.multi-thread && 'threaded' ) || 'non-threaded' }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up perl
+      uses: shogo82148/actions-setup-perl@v1
+      with:
+          perl-version: ${{ matrix.perl }}
+          distribution: ${{ ( startsWith( matrix.runner, 'windows-' ) && 'strawberry' ) || 'default' }}
+
+    - name: Show environment
+      run: |
+        perl -v
+        cpanm -v
+
+    - name: Install dependencies
+      run: |
+        cpanm --installdeps --notest .
+
+    - name: Run tests
+      run: |
+        make test TEST_VERBOSE=1 TEST_JOBS=1 HARNESS_OPTIONS=
+
+    - name: Show errors on Windows
+      if:  ${{ failure() && startsWith( matrix.runner, 'windows-')}}
+      run: |
+         ls -l C:/Users/
+         ls -l C:/Users/RUNNER~1/
+         cat C:/Users/runneradmin/.cpanm/work/*/build.log
+
+    - name: Show errors elsewhere
+      if:  ${{ failure() && ! startsWith( matrix.runner, 'windows-')}}
+      run: |
+         cat ~runner/.cpanm/work/*/build.log
+
