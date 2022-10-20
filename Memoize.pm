@@ -138,7 +138,7 @@ sub flush_cache {
 
 sub _wrap {
   my $info = shift;
-  my $normalizer = $info->{N};
+  my ($name, $normalizer) = @$info{qw(NAME N)};
   Scalar::Util::set_prototype(sub {
     my $argstr = do {
       no warnings 'uninitialized';
@@ -150,7 +150,7 @@ sub _wrap {
 
     if (wantarray) {
       my $cache = $info->{L};
-      _crap_out($info->{NAME}, 'list') unless $cache;
+      _crap_out($name, 'list') unless $cache;
       if (exists $cache->{$argstr}) {
         return @{$cache->{$argstr}};
       } else {
@@ -160,7 +160,7 @@ sub _wrap {
       }
     } else {
       my $cache = $info->{S};
-      _crap_out($info->{NAME}, 'scalar') unless $cache;
+      _crap_out($name, 'scalar') unless $cache;
       if (exists $cache->{$argstr}) { 
         return $info->{MERGED}
           ? $cache->{$argstr}[0] : $cache->{$argstr};
