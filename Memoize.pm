@@ -140,43 +140,41 @@ sub _wrap {
   my $info = shift;
   my $normalizer = $info->{N};
   Scalar::Util::set_prototype(sub {
+    my $argstr = do {
+      no warnings 'uninitialized';
+      defined $normalizer
+        ? ( wantarray ? ( &$normalizer )[0] : &$normalizer )
+          . '' # coerce undef to string while the warning is off
+        : join chr(28), @_;
+    };
 
-  my $argstr = do {
-    no warnings 'uninitialized';
-    defined $normalizer
-      ? ( wantarray ? ( &$normalizer )[0] : &$normalizer )
-        . '' # coerce undef to string while the warning is off
-      : join chr(28), @_;
-  };
-
-  if (wantarray) {
-    my $cache = $info->{L};
-    _crap_out($info->{NAME}, 'list') unless $cache;
-    if (exists $cache->{$argstr}) {
-      return @{$cache->{$argstr}};
-    } else {
-      my @q = do { no warnings 'recursion'; &{$info->{U}} };
-      $cache->{$argstr} = \@q;
-      @q;
-    }
-  } else {
-    my $cache = $info->{S};
-    _crap_out($info->{NAME}, 'scalar') unless $cache;
-    if (exists $cache->{$argstr}) { 
-      return $info->{MERGED}
-        ? $cache->{$argstr}[0] : $cache->{$argstr};
-    } else {
-      my $val = do { no warnings 'recursion'; &{$info->{U}} };
-      # Scalars are considered to be lists; store appropriately
-      if ($info->{MERGED}) {
-	$cache->{$argstr} = [$val];
+    if (wantarray) {
+      my $cache = $info->{L};
+      _crap_out($info->{NAME}, 'list') unless $cache;
+      if (exists $cache->{$argstr}) {
+        return @{$cache->{$argstr}};
       } else {
-	$cache->{$argstr} = $val;
+        my @q = do { no warnings 'recursion'; &{$info->{U}} };
+        $cache->{$argstr} = \@q;
+        @q;
       }
-      $val;
+    } else {
+      my $cache = $info->{S};
+      _crap_out($info->{NAME}, 'scalar') unless $cache;
+      if (exists $cache->{$argstr}) { 
+        return $info->{MERGED}
+          ? $cache->{$argstr}[0] : $cache->{$argstr};
+      } else {
+        my $val = do { no warnings 'recursion'; &{$info->{U}} };
+        # Scalars are considered to be lists; store appropriately
+        if ($info->{MERGED}) {
+          $cache->{$argstr} = [$val];
+        } else {
+          $cache->{$argstr} = $val;
+        }
+        $val;
+      }
     }
-  }
-
   }, prototype $info->{U});
 }
 
