@@ -13,7 +13,7 @@ package Memoize;
 our $VERSION = '1.14';
 
 use Carp;
-use Config;                     # Dammit.
+use Scalar::Util 1.11 (); # for set_prototype
 
 BEGIN { require Exporter; *import = \&Exporter::import }
 our @EXPORT = qw(memoize);
@@ -38,19 +38,6 @@ sub memoize {
   my $uppack = caller;		# TCL me Elmo!
   my $name = (ref $fn ? undef : $fn);
   my $cref = _make_cref($fn, $uppack);
-  my $proto = prototype $cref;
-  $proto = defined $proto ? "($proto)" : '';
-
-  # I would like to get rid of the eval, but there seems not to be any
-  # other way to set the prototype properly.  The switch here for
-  # 'usethreads' works around a bug in threadperl having to do with
-  # magic goto.  It would be better to fix the bug and use the magic
-  # goto version everywhere.
-  my $info;
-  my $wrapper = 
-      $Config{usethreads} 
-        ? eval "no warnings 'recursion'; sub $proto { &_memoizer(\$info, \@_); }"
-        : eval "no warnings 'recursion'; sub $proto { unshift \@_, \$info; goto &_memoizer; }";
 
   my $normalizer = $options{NORMALIZER};
   if (defined $normalizer  && ! ref $normalizer) {
@@ -64,9 +51,6 @@ sub memoize {
   if (defined $install_name) {
     $install_name = $uppack . '::' . $install_name
 	unless $install_name =~ /::/;
-    no strict;
-    no warnings 'redefine';
-    *{$install_name} = $wrapper; # Install memoized version
   }
 
   # convert LIST_CACHE => MERGE to SCALAR_CACHE => MERGE
@@ -109,19 +93,20 @@ sub memoize {
     }
   }
 
-  $info =
-  {
-    N => $normalizer,
-    U => $cref,
-    NAME => $install_name,
-    S => $caches{SCALAR},
-    L => $caches{LIST},
-    MERGED => $options{MERGED},
-  };
+  my $wrapper = _wrap($install_name, $cref, $normalizer, $options{MERGED}, \%caches);
+
+  if (defined $install_name) {
+    no strict;
+    no warnings 'redefine';
+    *{$install_name} = $wrapper;
+  }
 
   $memotable{$wrapper} = {
-    INFO    => $info,
-    WRAPPER => $wrapper, # cannot be in $info because $wrapper captures $info
+    L => $caches{LIST},
+    S => $caches{SCALAR},
+    U => $cref,
+    NAME => $install_name,
+    WRAPPER => $wrapper,
   };
 
   $wrapper			# Return just memoized version
@@ -129,7 +114,7 @@ sub memoize {
 
 sub flush_cache {
   my $func = _make_cref($_[0], scalar caller);
-  my $info = $memotable{$func}{INFO};
+  my $info = $memotable{$func};
   die "$func not memoized" unless defined $info;
   for my $context (qw(S L)) {
     my $cache = $info->{$context};
@@ -144,46 +129,45 @@ sub flush_cache {
   }
 }
 
-# This is the function that manages the memo tables.
-sub _memoizer {
-  my $info = shift;
+sub _wrap {
+  my ($name, $orig, $normalizer, $merged, $caches) = @_;
+  my ($cache_L, $cache_S) = @$caches{qw(LIST SCALAR)};
+  undef $caches; # keep the pad from keeping the hash alive forever
+  Scalar::Util::set_prototype(sub {
+    my $argstr = do {
+      no warnings 'uninitialized';
+      defined $normalizer
+        ? ( wantarray ? ( &$normalizer )[0] : &$normalizer )
+          . '' # coerce undef to string while the warning is off
+        : join chr(28), @_;
+    };
 
-  my $normalizer = $info->{N};
-  my $argstr = do {
-    no warnings 'uninitialized';
-    defined $normalizer
-      ? ( wantarray ? ( &$normalizer )[0] : &$normalizer )
-        . '' # coerce undef to string while the warning is off
-      : join chr(28), @_;
-  };
-
-  if (wantarray) {
-    my $cache = $info->{L};
-    _crap_out($info->{NAME}, 'list') unless $cache;
-    if (exists $cache->{$argstr}) {
-      return @{$cache->{$argstr}};
-    } else {
-      my @q = do { no warnings 'recursion'; &{$info->{U}} };
-      $cache->{$argstr} = \@q;
-      @q;
-    }
-  } else {
-    my $cache = $info->{S};
-    _crap_out($info->{NAME}, 'scalar') unless $cache;
-    if (exists $cache->{$argstr}) { 
-      return $info->{MERGED}
-        ? $cache->{$argstr}[0] : $cache->{$argstr};
-    } else {
-      my $val = do { no warnings 'recursion'; &{$info->{U}} };
-      # Scalars are considered to be lists; store appropriately
-      if ($info->{MERGED}) {
-	$cache->{$argstr} = [$val];
+    if (wantarray) {
+      _crap_out($name, 'list') unless $cache_L;
+      if (exists $cache_L->{$argstr}) {
+        return @{$cache_L->{$argstr}};
       } else {
-	$cache->{$argstr} = $val;
+        my @q = do { no warnings 'recursion'; &$orig };
+        $cache_L->{$argstr} = \@q;
+        @q;
       }
-      $val;
+    } else {
+      _crap_out($name, 'scalar') unless $cache_S;
+      if (exists $cache_S->{$argstr}) {
+        return $merged
+          ? $cache_S->{$argstr}[0] : $cache_S->{$argstr};
+      } else {
+        my $val = do { no warnings 'recursion'; &$orig };
+        # Scalars are considered to be lists; store appropriately
+        if ($merged) {
+          $cache_S->{$argstr} = [$val];
+        } else {
+          $cache_S->{$argstr} = $val;
+        }
+        $val;
+      }
     }
-  }
+  }, prototype $orig);
 }
 
 sub unmemoize {
@@ -195,7 +179,7 @@ sub unmemoize {
     croak "Could not unmemoize function `$f', because it was not memoized to begin with";
   }
 
-  my $tabent = $memotable{$cref}{INFO};
+  my $tabent = $memotable{$cref};
   unless (defined $tabent) {
     croak "Could not figure out how to unmemoize function `$f'";
   }
