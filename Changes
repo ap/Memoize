@@ -1,5 +1,14 @@
 Release history for Memoize
 
+1.15  Sun 23 Oct 2022
+  * Cleaner initialization logic in memoize(), with some added tests
+  * No more double wrapping of memoized functions, at the cost of loading Scalar::Util
+  * No more double stack frame and double return on threaded perls
+  * No more loading Config.pm, though Scalar::Util is required instead
+  * No more hash lookups in the wrapper
+  * Slightly less internal memory use
+  * Old history restored into Changes
+
 1.14  Sun 16 Oct 2022
   * No recursion depth warning from the Memoize wrapper function.
     This was a backcompat breakage in 1.09
