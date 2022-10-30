@@ -909,11 +909,9 @@ C<"x"> to every key.
 
 =head1 SEE ALSO
 
-At
-L<https://perl.plover.com/MiniMemoize/> there is an article about
+At L<https://perl.plover.com/MiniMemoize/> there is an article about
 memoization and about the internals of Memoize that appeared in The
-Perl Journal, issue #13.  (This article is also included in the
-Memoize distribution as F<article.html>.)
+Perl Journal, issue #13.
 
 Mark-Jason Dominus's book I<Higher-Order Perl> (2005, ISBN 1558607013,
 published
