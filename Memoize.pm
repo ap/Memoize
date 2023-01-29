@@ -137,7 +137,7 @@ sub _wrap {
     my $argstr = do {
       no warnings 'uninitialized';
       defined $normalizer
-        ? ( wantarray ? ( &$normalizer )[0] : &$normalizer )
+        ? ( wantarray ? ( $normalizer->( @_ ) )[0] : $normalizer->( @_ ) )
           . '' # coerce undef to string while the warning is off
         : join chr(28), @_;
     };
