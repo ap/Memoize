@@ -10,7 +10,7 @@
 use strict; use warnings;
 
 package Memoize;
-our $VERSION = '1.15';
+our $VERSION = '1.16';
 
 use Carp;
 use Scalar::Util 1.11 (); # for set_prototype
