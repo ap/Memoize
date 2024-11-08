@@ -14,7 +14,7 @@ __END__
 
 =head1 NAME
 
-Memoize::SDBM_File - DEPRECATED compability shim
+Memoize::SDBM_File - DEPRECATED compatibility shim
 
 =head1 DESCRIPTION
 
@@ -22,6 +22,6 @@ This class used to provide L<EXISTS|perltie/C<EXISTS>> support for L<SDBM_File>
 before support for C<EXISTS> was added to L<SDBM_File> itself
 L<in Perl 5.6.0|perl56delta/SDBM_File>.
 
-Any code still using this class should be rewritten to use L<SBDM_File> directly.
+Any code still using this class should be rewritten to use L<SDBM_File> directly.
 
 =cut
