@@ -17,7 +17,7 @@ is VAL(), 200, '... with the expected new return value';
 $V = 300;
 is VAL(), 200, '... which is expectedly sticky';
 
-ok eval { flush_cache(\&VAL); 1 }, 'flusing the cache by name works';
+ok eval { flush_cache(\&VAL); 1 }, 'flusing the cache by reference works';
 
 is VAL(), 300, '... with the expected new return value';
 $V = 400;
