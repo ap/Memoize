@@ -32,6 +32,6 @@ This class does the same thing as L<AnyDBM_File>, except that instead of
 L<NDBM_File> itself it loads L<Memoize::NDBM_File> if L<NDBM_File> lacks
 L<EXISTS|perltie/C<EXISTS>> support.
 
-Code which requires perl 5.37.3 or newer should simply use L<AnyBDM_File> directly.
+Code which requires perl 5.37.3 or newer should simply use L<AnyDBM_File> directly.
 
 =cut
